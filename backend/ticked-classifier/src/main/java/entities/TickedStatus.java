@@ -1,5 +1,5 @@
 package entities;
 
 public enum TickedStatus {
-    ABIERTO, EN_PROGRESO, CERRADO
+    ABIERTO, EN_PROGRESO, CERRADO, ARCHIVADO
 }
