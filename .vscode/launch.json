@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-TickedClassifierApplication<ticked-classifier>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "dev.aprokhorenko.ticked_classifier.TickedClassifierApplication",
+            "projectName": "ticked-classifier",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TestTickedClassifierApplication<ticked-classifier>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "dev.aprokhorenko.ticked_classifier.TestTickedClassifierApplication",
+            "projectName": "ticked-classifier",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
