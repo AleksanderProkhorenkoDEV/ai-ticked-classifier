@@ -1,12 +1,12 @@
-package controllers;
+package dev.aprokhorenko.ticked_classifier.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dto.PageResponseDTO;
-import dto.TickedResponseDTO;
-import mappers.TickedMapper;
-import services.TickedServices;
+import dev.aprokhorenko.ticked_classifier.dto.PageResponseDTO;
+import dev.aprokhorenko.ticked_classifier.dto.TickedResponseDTO;
+import dev.aprokhorenko.ticked_classifier.mappers.TickedMapper;
+import dev.aprokhorenko.ticked_classifier.services.TickedServices;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;

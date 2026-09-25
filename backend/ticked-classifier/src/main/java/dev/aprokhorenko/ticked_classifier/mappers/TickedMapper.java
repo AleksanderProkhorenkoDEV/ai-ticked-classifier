@@ -1,9 +1,9 @@
-package mappers;
+package dev.aprokhorenko.ticked_classifier.mappers;
 
 import org.springframework.stereotype.Component;
 
-import dto.TickedResponseDTO;
-import entities.Ticked;
+import dev.aprokhorenko.ticked_classifier.dto.TickedResponseDTO;
+import dev.aprokhorenko.ticked_classifier.entities.Ticked;
 
 @Component
 public class TickedMapper {

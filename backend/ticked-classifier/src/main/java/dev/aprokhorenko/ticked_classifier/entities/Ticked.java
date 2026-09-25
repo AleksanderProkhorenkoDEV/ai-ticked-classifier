@@ -1,4 +1,4 @@
-package entities;
+package dev.aprokhorenko.ticked_classifier.entities;
 
 import java.time.LocalDateTime;
 

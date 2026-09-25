@@ -1,4 +1,4 @@
-package dto;
+package dev.aprokhorenko.ticked_classifier.dto;
 
 import java.util.List;
 

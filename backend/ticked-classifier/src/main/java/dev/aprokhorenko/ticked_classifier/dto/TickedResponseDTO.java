@@ -1,11 +1,11 @@
-package dto;
+package dev.aprokhorenko.ticked_classifier.dto;
 
 import java.time.LocalDateTime;
 
-import entities.TickedCategory;
-import entities.TickedFeeling;
-import entities.TickedStatus;
-import entities.TickedUrgency;
+import dev.aprokhorenko.ticked_classifier.entities.TickedCategory;
+import dev.aprokhorenko.ticked_classifier.entities.TickedFeeling;
+import dev.aprokhorenko.ticked_classifier.entities.TickedStatus;
+import dev.aprokhorenko.ticked_classifier.entities.TickedUrgency;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

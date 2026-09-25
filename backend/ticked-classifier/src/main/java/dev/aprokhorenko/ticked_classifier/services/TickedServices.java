@@ -1,12 +1,12 @@
-package services;
+package dev.aprokhorenko.ticked_classifier.services;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import entities.Ticked;
-import repositories.TickedRepository;
+import dev.aprokhorenko.ticked_classifier.entities.Ticked;
+import dev.aprokhorenko.ticked_classifier.repositories.TickedRepository;
 
 @Service
 public class TickedServices {
