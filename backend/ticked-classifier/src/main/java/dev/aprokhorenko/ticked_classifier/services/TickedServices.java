@@ -5,8 +5,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import dev.aprokhorenko.ticked_classifier.dto.CreateTickedRequestDTO;
 import dev.aprokhorenko.ticked_classifier.entities.Ticked;
 import dev.aprokhorenko.ticked_classifier.repositories.TickedRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class TickedServices {
@@ -20,5 +22,10 @@ public class TickedServices {
     public Page<Ticked> getAllTickeds(Integer page, Integer sizePerPage) {
         Pageable pageable = PageRequest.of(page, sizePerPage);
         return tickedRepository.findAll(pageable);
+    }
+
+    @Transactional 
+    public void createTicked(CreateTickedRequestDTO request) {
+        
     }
 }
