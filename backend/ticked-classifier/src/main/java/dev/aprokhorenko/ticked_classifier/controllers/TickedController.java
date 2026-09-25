@@ -27,7 +27,6 @@ public class TickedController {
 
     @GetMapping()
     public ResponseEntity<PageResponseDTO<TickedResponseDTO>> getAllTicked(
-            @RequestParam String param,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size) {
 
