@@ -11,11 +11,11 @@ import dev.aprokhorenko.ticked_classifier.repositories.TicketRepository;
 import jakarta.transaction.Transactional;
 
 @Service
-public class TickedServices {
+public class TicketServices {
 
     private TicketRepository tickedRepository;
 
-    public TickedServices(TicketRepository tickedRepository) {
+    public TicketServices(TicketRepository tickedRepository) {
         this.tickedRepository = tickedRepository;
     }
 

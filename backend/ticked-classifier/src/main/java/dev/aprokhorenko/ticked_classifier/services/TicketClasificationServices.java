@@ -13,7 +13,7 @@ import org.springframework.ai.mistralai.api.MistralAiApi.ChatCompletionRequest.R
 import org.springframework.stereotype.Service;
 
 import dev.aprokhorenko.ticked_classifier.dto.TicketClasification;
-import netscape.javascript.JSObject;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class TicketClasificationServices {
@@ -24,7 +24,7 @@ public class TicketClasificationServices {
         this.chatModel = chatModel;
     }
 
-    public String classifyTicket(String title, String description) {
+    public TicketClasification classifyTicket(String title, String description) {
         String prompt = """
                 Clasifica el siguiente ticked.
                 Titulo: %s
@@ -37,6 +37,9 @@ public class TicketClasificationServices {
                 .build();
 
         ChatResponse response = chatModel.call(new Prompt(prompt, options));
-        
+        ObjectMapper mapper = new ObjectMapper();
+        TicketClasification result = mapper.readValue(response.getResult().getOutput().getText(),
+                TicketClasification.class);
+        return result;
     }
 }
