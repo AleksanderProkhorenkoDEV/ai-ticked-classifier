@@ -46,4 +46,15 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
 
+    public Ticket(String title, String description, TicketCategory category, TicketUrgency urgency,
+            TicketFeeling feeling) {
+        this.title = title;
+        this.description = description;
+        this.date = LocalDateTime.now();
+        this.category = category;
+        this.urgency = urgency;
+        this.feeling = feeling;
+        this.status = TicketStatus.ABIERTO;
+    }
+
 }
