@@ -8,7 +8,7 @@ import dev.aprokhorenko.ticked_classifier.dto.GlobalResponseDTO;
 import dev.aprokhorenko.ticked_classifier.dto.PageResponseDTO;
 import dev.aprokhorenko.ticked_classifier.dto.TicketResponseDTO;
 import dev.aprokhorenko.ticked_classifier.mappers.TicketMapper;
-import dev.aprokhorenko.ticked_classifier.services.TickedServices;
+import dev.aprokhorenko.ticked_classifier.services.TicketServices;
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/tickeds")
 public class TicketController {
 
-    private TickedServices tickedServices;
+    private TicketServices tickedServices;
     private TicketMapper tickedMapper;
 
-    public TicketController(TickedServices tickedServices, TicketMapper tickedMapper) {
+    public TicketController(TicketServices tickedServices, TicketMapper tickedMapper) {
         this.tickedServices = tickedServices;
         this.tickedMapper = tickedMapper;
     }
