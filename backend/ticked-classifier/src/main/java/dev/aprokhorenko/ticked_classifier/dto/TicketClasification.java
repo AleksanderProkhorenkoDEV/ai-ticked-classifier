@@ -1,7 +1,7 @@
 package dev.aprokhorenko.ticked_classifier.dto;
 
-import dev.aprokhorenko.ticked_classifier.entities.TickedCategory;
-import dev.aprokhorenko.ticked_classifier.entities.TickedFeeling;
-import dev.aprokhorenko.ticked_classifier.entities.TickedUrgency;
+import dev.aprokhorenko.ticked_classifier.entities.TicketCategory;
+import dev.aprokhorenko.ticked_classifier.entities.TicketFeeling;
+import dev.aprokhorenko.ticked_classifier.entities.TicketUrgency;
 
-public record TicketClasification(TickedCategory category, TickedFeeling feeling, TickedUrgency urgency) {}
+public record TicketClasification(TicketCategory category, TicketFeeling feeling, TicketUrgency urgency) {}
