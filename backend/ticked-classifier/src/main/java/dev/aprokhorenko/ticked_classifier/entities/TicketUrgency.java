@@ -1,5 +1,5 @@
 package dev.aprokhorenko.ticked_classifier.entities;
 
-public enum TickedUrgency {
+public enum TicketUrgency {
     BAJA, MEDIA, ALTA
 }

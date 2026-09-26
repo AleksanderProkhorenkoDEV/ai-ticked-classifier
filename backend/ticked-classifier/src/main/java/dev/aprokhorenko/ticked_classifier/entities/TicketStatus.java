@@ -1,5 +1,5 @@
 package dev.aprokhorenko.ticked_classifier.entities;
 
-public enum TickedStatus {
+public enum TicketStatus {
     ABIERTO, EN_PROGRESO, CERRADO, ARCHIVADO
 }

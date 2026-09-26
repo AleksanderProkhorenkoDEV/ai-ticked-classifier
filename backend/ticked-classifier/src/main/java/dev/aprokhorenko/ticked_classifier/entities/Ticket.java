@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Ticked {
+public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,15 +35,15 @@ public class Ticked {
     private LocalDateTime date = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
-    private TickedCategory category;
+    private TicketCategory category;
 
     @Enumerated(EnumType.STRING)
-    private TickedUrgency urgency;
+    private TicketUrgency urgency;
 
     @Enumerated(EnumType.STRING)
-    private TickedFeeling feeling;
+    private TicketFeeling feeling;
 
     @Enumerated(EnumType.STRING)
-    private TickedStatus status;
+    private TicketStatus status;
 
 }

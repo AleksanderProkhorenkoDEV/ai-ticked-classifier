@@ -1,5 +1,5 @@
 package dev.aprokhorenko.ticked_classifier.entities;
 
-public enum TickedCategory {
+public enum TicketCategory {
     BUG, CONSULTA, INCIDENCIA
 }

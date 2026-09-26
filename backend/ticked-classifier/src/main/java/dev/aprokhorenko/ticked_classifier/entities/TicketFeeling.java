@@ -1,5 +1,5 @@
 package dev.aprokhorenko.ticked_classifier.entities;
 
-public enum TickedFeeling {
+public enum TicketFeeling {
     NEGATIVO, NEUTRO, POSITIVO
 }

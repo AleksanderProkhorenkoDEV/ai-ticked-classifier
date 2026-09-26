@@ -2,14 +2,14 @@ package dev.aprokhorenko.ticked_classifier.mappers;
 
 import org.springframework.stereotype.Component;
 
-import dev.aprokhorenko.ticked_classifier.dto.TickedResponseDTO;
-import dev.aprokhorenko.ticked_classifier.entities.Ticked;
+import dev.aprokhorenko.ticked_classifier.dto.TicketResponseDTO;
+import dev.aprokhorenko.ticked_classifier.entities.Ticket;
 
 @Component
-public class TickedMapper {
+public class TicketMapper {
 
-    public TickedResponseDTO toDto(Ticked ticked) {
-        return new TickedResponseDTO(
+    public TicketResponseDTO toDto(Ticket ticked) {
+        return new TicketResponseDTO(
                 ticked.getId(),
                 ticked.getTitle(),
                 ticked.getDescription(),
