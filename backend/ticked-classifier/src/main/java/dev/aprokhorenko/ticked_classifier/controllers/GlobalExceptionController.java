@@ -1,8 +1,10 @@
 package dev.aprokhorenko.ticked_classifier.controllers;
 
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -18,11 +20,12 @@ public class GlobalExceptionController {
                 .body(new GlobalResponseDTO("Entidad no encontrada", HttpStatus.NOT_FOUND.value()));
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<GlobalResponseDTO> handleUnreadable(HttpMessageNotReadableException ex) {
-        Throwable cause = ex.getMostSpecificCause();
-
-        return ResponseEntity.badRequest()
-                .body(new GlobalResponseDTO(cause.getMessage(), HttpStatus.BAD_REQUEST.value()));
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<GlobalResponseDTO> handleValidation(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new GlobalResponseDTO(message, HttpStatus.BAD_REQUEST.value()));
     }
 }
