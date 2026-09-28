@@ -46,6 +46,9 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
 
+    @Column(nullable = false)
+    private Boolean archived = false;
+
     public Ticket(String title, String description, TicketCategory category, TicketUrgency urgency,
             TicketFeeling feeling) {
         this.title = title;
@@ -57,7 +60,11 @@ public class Ticket {
         this.status = TicketStatus.ABIERTO;
     }
 
-    public void changeStatus(TicketStatus status){
+    public void changeStatus(TicketStatus status) {
         this.status = status;
+    }
+
+    public void changeArchived(Boolean archived) {
+        this.archived = archived;
     }
 }
