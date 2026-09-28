@@ -57,4 +57,7 @@ public class Ticket {
         this.status = TicketStatus.ABIERTO;
     }
 
+    public void changeStatus(TicketStatus status){
+        this.status = status;
+    }
 }
