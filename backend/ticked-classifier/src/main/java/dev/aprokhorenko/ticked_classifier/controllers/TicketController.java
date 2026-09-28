@@ -3,6 +3,7 @@ package dev.aprokhorenko.ticked_classifier.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import dev.aprokhorenko.ticked_classifier.dto.ArchivedTicketRequestDTO;
 import dev.aprokhorenko.ticked_classifier.dto.CreateTicketRequestDTO;
 import dev.aprokhorenko.ticked_classifier.dto.GlobalResponseDTO;
 import dev.aprokhorenko.ticked_classifier.dto.PageResponseDTO;
@@ -56,6 +57,14 @@ public class TicketController {
             @PathVariable Long id) {
         tickedServices.updateStatus(request, id);
         return ResponseEntity.ok(new GlobalResponseDTO("Estatus actualiazdo", HttpStatus.OK.value()));
+    }
+
+    @PatchMapping("/archived/{id}")
+    public ResponseEntity<GlobalResponseDTO> archivedEntity(
+            @Valid @RequestBody ArchivedTicketRequestDTO request,
+            @PathVariable Long id) {
+        tickedServices.archivedTicket(request, id);
+        return ResponseEntity.ok(new GlobalResponseDTO("Ticket actualizado", HttpStatus.OK.value()));
     }
 
 }
