@@ -1,4 +1,4 @@
-package entities;
+package dev.aprokhorenko.ticked_classifier.entities;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Ticked {
+public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,15 +35,36 @@ public class Ticked {
     private LocalDateTime date = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
-    private TickedCategory category;
+    private TicketCategory category;
 
     @Enumerated(EnumType.STRING)
-    private TickedUrgency urgency;
+    private TicketUrgency urgency;
 
     @Enumerated(EnumType.STRING)
-    private TickedFeeling feeling;
+    private TicketFeeling feeling;
 
     @Enumerated(EnumType.STRING)
-    private TickedStatus status;
+    private TicketStatus status;
 
+    @Column(nullable = false)
+    private Boolean archived = false;
+
+    public Ticket(String title, String description, TicketCategory category, TicketUrgency urgency,
+            TicketFeeling feeling) {
+        this.title = title;
+        this.description = description;
+        this.date = LocalDateTime.now();
+        this.category = category;
+        this.urgency = urgency;
+        this.feeling = feeling;
+        this.status = TicketStatus.ABIERTO;
+    }
+
+    public void changeStatus(TicketStatus status) {
+        this.status = status;
+    }
+
+    public void changeArchived(Boolean archived) {
+        this.archived = archived;
+    }
 }
