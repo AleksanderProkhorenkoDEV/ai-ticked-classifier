@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import dev.aprokhorenko.ticked_classifier.dto.ArchivedTicketRequestDTO;
 import dev.aprokhorenko.ticked_classifier.dto.CreateTicketRequestDTO;
 import dev.aprokhorenko.ticked_classifier.dto.TicketClasification;
 import dev.aprokhorenko.ticked_classifier.dto.UpdateStatusTicketDTO;
@@ -49,5 +50,11 @@ public class TicketServices {
     public void updateStatus(UpdateStatusTicketDTO request, Long id) {
         Ticket ticket = getTickedById(id);
         ticket.changeStatus(request.getStatus());
+    }
+
+    @Transactional
+    public void archivedTicket(ArchivedTicketRequestDTO request, Long id) {
+        Ticket ticket = getTickedById(id);
+        ticket.changeArchived(request.getArchived());
     }
 }
