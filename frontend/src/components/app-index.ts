@@ -18,17 +18,6 @@ export class AppIndex extends LitElement {
 
   render() {
     return html`
-      <header>
-        <nav>
-          <a class="brand-link" href="/">
-            <img class="brand-logo" src="https://www.opencells.dev/images/logo.svg" alt="Open Cells" />
-          </a>
-          <ul class="nav-links">
-            <li><a href="https://www.opencells.dev/docs/index.html" target="_blank" rel="noopener">Docs</a></li>
-            <li><a href="https://github.com/BBVA/open-cells" target="_blank" rel="noopener">GitHub</a></li>
-          </ul>
-        </nav>
-      </header>
       <main role="main" tabindex="-1">
         <slot></slot>
       </main>
