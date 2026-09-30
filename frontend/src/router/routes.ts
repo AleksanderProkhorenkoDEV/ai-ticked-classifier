@@ -6,7 +6,7 @@ export const routes: RouteDefinition[] = [
     name: 'home',
     component: 'home-page',
     action: async () => {
-      await import('../pages/home/home-page.js');
+      await import('../pages/home/home-page.ts');
     },
   },
   {
@@ -14,7 +14,7 @@ export const routes: RouteDefinition[] = [
     name: 'second',
     component: 'second-page',
     action: async () => {
-      await import('../pages/second/second-page.js');
+      await import('../pages/second/second-page.ts');
     },
   }
 ];
