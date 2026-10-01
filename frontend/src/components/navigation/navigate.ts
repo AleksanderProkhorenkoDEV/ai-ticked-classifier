@@ -1,6 +1,6 @@
 import { PageController } from "@open-cells/page-controller";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 
 @customElement('navigation-menu')
 export class Navigation extends LitElement {
@@ -9,11 +9,13 @@ export class Navigation extends LitElement {
     @state()
     private _currentPathName: string = "Home"
 
+    @property({ type: String, reflect: true })
+    orientation: 'horizontal' | 'vertical' = 'horizontal';
+
     static styles?: CSSResultGroup = [
         css`
             :host{
                 display: flex;
-                flex-direction: row;
                 align-items:center;
                 gap: 2rem;
 
@@ -21,6 +23,19 @@ export class Navigation extends LitElement {
                 height:100%;
 
                 margin-left:auto;
+            }
+
+            :host([orientation="vertical"]) {
+                flex-direction: column;
+                align-items: flex-start;
+
+                width: fit-content;
+                
+                margin-left: 0;
+            }
+
+            :host([orientation="horizontal"]) {
+                flex-direction: row;
             }
 
             a{
