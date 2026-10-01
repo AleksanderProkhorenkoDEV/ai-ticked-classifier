@@ -1,7 +1,7 @@
 @import url('./home.css');
 
 :root {
-  --color-backgrond: #D9D9D9;
+  --color-background: #D9D9D9;
   --color-primary: #3B92F6;
   --color-text: #0D1321;
   --color-green: #60AB9A;
@@ -24,9 +24,14 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-weight: 400;
 
-  background: var(--color-backgrond);
+  background: var(--color-background);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
+}
+
+a{
+  text-decoration: none;
+  color: var(--color-text)
 }
 
 /* ---- DEFINE THE FONT FACE OF THE APP ---- */
