@@ -1,10 +1,9 @@
-import { PageController } from '@open-cells/page-controller';
 import { customElement } from 'lit/decorators.js';
 import { html, LitElement } from 'lit';
 
 @customElement('home-page')
 export class HomePage extends LitElement {
-  pageController = new PageController(this);
+
 
   protected createRenderRoot(): HTMLElement | DocumentFragment {
     return this;
@@ -12,7 +11,11 @@ export class HomePage extends LitElement {
 
   render() {
     return html`
-      <h1>Home</h1>
+      <header>
+          <nav>
+              <navigation-menu></navigation-menu>
+          </nav>
+      </header>
     `;
   }
 }
