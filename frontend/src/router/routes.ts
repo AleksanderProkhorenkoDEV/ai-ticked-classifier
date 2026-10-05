@@ -16,5 +16,13 @@ export const routes: RouteDefinition[] = [
     action: async () => {
       await import('../pages/dashboard/dashboard-page.ts');
     }
+  },
+  {
+    path: '/create-ticket',
+    name: 'Create Ticket',
+    component: "create-ticket-page",
+    action: async () => {
+      await import('../pages/create-ticket/create-ticket.ts');
+    }
   }
 ];
