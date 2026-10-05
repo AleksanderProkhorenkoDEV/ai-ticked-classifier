@@ -12,7 +12,7 @@ export class HomePage extends LitElement {
 
   handleCreateTicket = (e: Event) => {
     e.preventDefault()
-    this.pageController.navigate("/dashboard/create-ticket");
+    this.pageController.navigate("/Create Ticket");
   }
 
   render() {
@@ -28,7 +28,7 @@ export class HomePage extends LitElement {
         <div class="hero">
           <h1 class="hero__title"><span class="hero__title_emphasise">AI</span> Ticket Clasifier</h1>
           <p class="hero__text">Organize and classify your tickets effortlessly, <br/> powered by LLMs</p>
-          <a class="hero__action" href="/dashboard/create-ticket" @click="${(e: Event) => this.handleCreateTicket(e)}">Create Ticket <img src="/icons/arrow-forward.svg" alt="arrow forward" /></a>
+          <a class="hero__action" href="/create-ticket" @click="${(e: Event) => this.handleCreateTicket(e)}">Create Ticket <img src="/icons/arrow-forward.svg" alt="arrow forward" /></a>
         </div>
 
 
