@@ -40,6 +40,7 @@ export class CreateTicketPage extends LitElement {
                 <article>
                     <form class="form">
                         <h1>Crear Incidencia</h1>
+                        <p>Explica detalladamente el problema, para que el modelo de IA <br/> pueda analizar y clasificar su problema</p>
                         <label class="form__label" required="required">
                             Titulo
                             <input class="form__input" />
@@ -50,7 +51,7 @@ export class CreateTicketPage extends LitElement {
                             <input  class="form__input"/>
                         </label>
 
-                        <button>Crear ticket</button>
+                        <button class="form__button"><img src="/icons/add.svg" alt="alt icon" /> Crear ticket</button>
                     </form>
                 </article>
             </main>
