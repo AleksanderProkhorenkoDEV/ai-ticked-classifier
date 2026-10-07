@@ -5,7 +5,6 @@ export const createTicketStyle = css`
 
 /* ---- CONTAINERS ---- */
 main {
-    border: 1px solid red;
     box-sizing:border-box;
 
     display:grid;
@@ -126,107 +125,5 @@ article {
     background: var(--color-green)
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 10.5l3.2 3.2L15 7'/%3E%3C/svg%3E")
       center / 70% no-repeat;
-  }
-
-
-/* ---- FORM ---- */
-
-
-.form{
-    border-radius:.3rem;
-
-    display: flex;
-    flex-direction:column;
-    gap:1rem;
-
-    padding: 1rem 2rem;
-
-    background-color:var(--color-white);
-    box-shadow: 6px 9px 20px rgba(13, 19, 33, 0.5);   
 }
-
-.form__label{
-    display: flex;
-    flex-direction:column;
-    gap:.5rem;
-
-    position:relative;
-
-    color: rgb(from var(--color-text) r g b / 0.7);
-}
-
-.form__label[required="required"]::before{
-    content: "*";
-
-    position:absolute;
-    left:-8px;
-
-    color:var(--color-red);
-}
-
-.form__input {
-    width: 100%;
-
-    padding: .5rem .7rem;
-    
-    font: inherit;
-    font-size: 0.95rem;
-    
-    color: var(--color-text);
-    background: var(--color-white);
-    border: 1px solid var(--color-text);
-    border-radius: .3rem;
-    
-    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
-    box-sizing: border-box;
-
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease,
-      background-color 0.15s ease;
-}
-
-.form__input:focus {
-    outline: none;
-    border-color: var(--color-primary);
-}
-
-.form__button{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    
-    width: 100%;
-    
-    padding: 0.75rem 1.25rem;
-    
-    font: inherit;
-    font-size: 0.95rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    
-    color: var(--color-white);
-    background: var(--color-primary);
-    
-    box-sizing: border-box;
-    border: 1px solid transparent;
-    border-radius: .3rem;
-    box-shadow:
-      0 1px 2px rgba(16, 24, 40, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    
-    cursor: pointer;
-
-    transition:
-      background-color 0.15s ease,
-      box-shadow 0.15s ease,
-      transform 0.1s ease;
-}
-
-.form__button:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 4px var(--accent-ring, rgba(79, 70, 229, 0.25));
-}
-
 `
