@@ -1,8 +1,8 @@
 import { createTicketStyle } from "../../css/create-ticket.css";
 import { PageController } from "@open-cells/page-controller";
+import { customElement, property } from "lit/decorators.js";
 import { CSSResultGroup, html, LitElement } from "lit";
 import { baseStyles } from "../../css/base-styles.css";
-import { customElement, property } from "lit/decorators.js";
 
 @customElement('create-ticket-page')
 export class CreateTicketPage extends LitElement {
