@@ -10,16 +10,12 @@ export class HomePage extends LitElement {
     return this;
   }
 
-  handleCreateTicket = (e: Event) => {
-    e.preventDefault()
-    this.pageController.navigate("/Create Ticket");
-  }
 
   render() {
     return html`
       <header>
           <nav>
-              <navigation-menu></navigation-menu>
+              <navigation-menu current-path="/"></navigation-menu>
           </nav>
       </header>
       <main>
@@ -28,7 +24,7 @@ export class HomePage extends LitElement {
         <div class="hero">
           <h1 class="hero__title"><span class="hero__title_emphasise">AI</span> Ticket Clasifier</h1>
           <p class="hero__text">Organize and classify your tickets effortlessly, <br/> powered by LLMs</p>
-          <a class="hero__action" href="/create-ticket" @click="${(e: Event) => this.handleCreateTicket(e)}">Create Ticket <img src="/icons/arrow-forward.svg" alt="arrow forward" /></a>
+          <create-ticket-button></create-ticket-button>
         </div>
 
 
