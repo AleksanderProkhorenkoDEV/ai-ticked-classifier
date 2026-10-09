@@ -8,8 +8,11 @@ import org.springframework.stereotype.Service;
 import dev.aprokhorenko.ticked_classifier.dto.ArchivedTicketRequestDTO;
 import dev.aprokhorenko.ticked_classifier.dto.CreateTicketRequestDTO;
 import dev.aprokhorenko.ticked_classifier.dto.TicketClasification;
+import dev.aprokhorenko.ticked_classifier.dto.TicketStatsDTO;
 import dev.aprokhorenko.ticked_classifier.dto.UpdateStatusTicketDTO;
 import dev.aprokhorenko.ticked_classifier.entities.Ticket;
+import dev.aprokhorenko.ticked_classifier.entities.TicketStatus;
+import dev.aprokhorenko.ticked_classifier.entities.TicketUrgency;
 import dev.aprokhorenko.ticked_classifier.repositories.TicketRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -56,5 +59,13 @@ public class TicketServices {
     public void archivedTicket(ArchivedTicketRequestDTO request, Long id) {
         Ticket ticket = getTickedById(id);
         ticket.changeArchived(request.getArchived());
+    }
+
+    public TicketStatsDTO getTicketStats() {
+        return new TicketStatsDTO(
+                tickedRepository.count(),
+                tickedRepository.countByStatus(TicketStatus.ABIERTO),
+                tickedRepository.countByUrgency(TicketUrgency.ALTA),
+                tickedRepository.countByArchivedTrue());
     }
 }
