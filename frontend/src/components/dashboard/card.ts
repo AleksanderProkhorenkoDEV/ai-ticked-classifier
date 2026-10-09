@@ -5,8 +5,8 @@ import { baseStyles } from "../../css/base-styles.css";
 @customElement("dashboard-card")
 export class DashboardCard extends LitElement {
 
-    @property({ type: String, reflect: true })
-    public number: String = "0";
+    @property({ type: Number, reflect: true })
+    public number: Number = 0;
 
     @property({ type: String })
     public text: String = "Tickets";
