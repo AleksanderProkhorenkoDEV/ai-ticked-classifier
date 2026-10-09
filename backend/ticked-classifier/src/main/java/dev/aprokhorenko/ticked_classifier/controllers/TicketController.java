@@ -8,6 +8,7 @@ import dev.aprokhorenko.ticked_classifier.dto.CreateTicketRequestDTO;
 import dev.aprokhorenko.ticked_classifier.dto.GlobalResponseDTO;
 import dev.aprokhorenko.ticked_classifier.dto.PageResponseDTO;
 import dev.aprokhorenko.ticked_classifier.dto.TicketResponseDTO;
+import dev.aprokhorenko.ticked_classifier.dto.TicketStatsDTO;
 import dev.aprokhorenko.ticked_classifier.dto.UpdateStatusTicketDTO;
 import dev.aprokhorenko.ticked_classifier.mappers.TicketMapper;
 import dev.aprokhorenko.ticked_classifier.services.TicketServices;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/tickeds")
+@RequestMapping("/tickets")
 public class TicketController {
 
     private TicketServices tickedServices;
@@ -65,6 +66,12 @@ public class TicketController {
             @PathVariable Long id) {
         tickedServices.archivedTicket(request, id);
         return ResponseEntity.ok(new GlobalResponseDTO("Ticket actualizado", HttpStatus.OK.value()));
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<TicketStatsDTO> getTicketStats() {
+        TicketStatsDTO stats = tickedServices.getTicketStats();
+        return ResponseEntity.ok(stats);
     }
 
 }
