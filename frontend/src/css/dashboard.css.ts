@@ -113,17 +113,4 @@ aside{
     font-family: "Saira";
     font-weight:400;
 }
-
-.content__cards{
-    border:1px solid red;
-
-    width:90%;
-
-    display:flex;
-    gap:3rem;
-    align-items:center;
-    justify-content:center;
-}
-
-
 `
