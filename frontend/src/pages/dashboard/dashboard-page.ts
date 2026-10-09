@@ -1,13 +1,17 @@
-import { customElement } from "lit/decorators.js";
+import { customElement, state } from "lit/decorators.js";
 import { CSSResultGroup, html, LitElement } from "lit";
 import { PageController } from "@open-cells/page-controller";
 import { dashboardStyles } from "../../css/dashboard.css";
 import { baseStyles } from "../../css/base-styles.css";
+import { getTicketStats, TicketStatsDTO } from "../../lib/action/stats";
 
 @customElement('dashboard-page')
 export class DashboardPage extends LitElement {
     pageController = new PageController(this)
 
+
+    @state()
+    private _stats: TicketStatsDTO = { total: 0, open: 0, high: 0, resolved: 0 };
 
     static styles?: CSSResultGroup = [
         dashboardStyles,
@@ -17,6 +21,15 @@ export class DashboardPage extends LitElement {
     handleNavigation = (e: Event, route: string) => {
         e.preventDefault()
         this.pageController.navigate(route);
+    }
+
+    async connectedCallback() {
+        super.connectedCallback();
+        try {
+            this._stats = await getTicketStats();
+        } catch (error) {
+            console.error('No se pudieron cargar las estadísticas', error);
+        }
     }
 
     render() {
@@ -47,10 +60,10 @@ export class DashboardPage extends LitElement {
                     <create-ticket-button></create-ticket-button>
                 </div>
                 <div class="content__cards">
-                    <dashboard-card .text=${"Total"}></dashboard-card>
-                    <dashboard-card .text=${"Open"} stats="open"></dashboard-card>
-                    <dashboard-card .text=${"High"} stats="high"></dashboard-card>
-                    <dashboard-card .text=${"Resolved"} stats="resolved"></dashboard-card>
+                    <dashboard-card .number=${this._stats.total} .text=${"Total"}></dashboard-card>
+                    <dashboard-card .number=${this._stats.open} .text=${"Open"} stats="open"></dashboard-card>
+                    <dashboard-card .number=${this._stats.high} .text=${"High"} stats="high"></dashboard-card>
+                    <dashboard-card .number=${this._stats.resolved} .text=${"Resolved"} stats="resolved"></dashboard-card>
                 </div>
                 <!-- TABLA CON LA LISTA -->
             </section>
