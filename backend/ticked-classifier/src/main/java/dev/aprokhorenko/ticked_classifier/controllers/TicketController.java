@@ -10,6 +10,8 @@ import dev.aprokhorenko.ticked_classifier.dto.PageResponseDTO;
 import dev.aprokhorenko.ticked_classifier.dto.TicketResponseDTO;
 import dev.aprokhorenko.ticked_classifier.dto.TicketStatsDTO;
 import dev.aprokhorenko.ticked_classifier.dto.UpdateStatusTicketDTO;
+import dev.aprokhorenko.ticked_classifier.entities.TicketCategory;
+import dev.aprokhorenko.ticked_classifier.entities.TicketUrgency;
 import dev.aprokhorenko.ticked_classifier.mappers.TicketMapper;
 import dev.aprokhorenko.ticked_classifier.services.TicketServices;
 import jakarta.validation.Valid;
@@ -36,13 +38,16 @@ public class TicketController {
         this.tickedMapper = tickedMapper;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<PageResponseDTO<TicketResponseDTO>> getAllTicked(
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "25") Integer size) {
-
-        Page<TicketResponseDTO> dtoPage = tickedServices.getAllTickeds(page, size).map(tickedMapper::toDto);
-
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(required = false) TicketUrgency urgency,
+            @RequestParam(required = false) TicketCategory category,
+            @RequestParam(required = false) String search) {
+        Page<TicketResponseDTO> dtoPage = tickedServices
+                .getAllTickeds(page, size, urgency, category, search)
+                .map(tickedMapper::toDto);
         return ResponseEntity.ok(new PageResponseDTO<>(dtoPage));
     }
 
