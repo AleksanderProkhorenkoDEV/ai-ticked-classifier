@@ -47,7 +47,7 @@ export class DashboardPage extends LitElement {
                 </div>
                 <wrapper-card></wrapper-card>
                 <!-- TABLA CON LA LISTA -->
-                 
+                <ticket-table></ticket-table>
             </section>
           </main>
         `;
