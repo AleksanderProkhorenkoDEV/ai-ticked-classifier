@@ -84,7 +84,6 @@ aside{
 /* ---- CONTENT ---- */
 
 .content{
-    border:1px solid red;
 
     width:85%;
     height:90%;
@@ -98,8 +97,6 @@ aside{
 }
 
 .content__header{
-    border:1px solid green;
-
     height:4rem;
     width:100%;
     
