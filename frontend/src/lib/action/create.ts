@@ -16,7 +16,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const createTicket = async (data: CreateTicketDTO): Promise<TicketResponseDTO> => {
    
-    const response = await fetch(`${API_URL}/tickeds/create`, {
+    const response = await fetch(`${API_URL}/tickets/create`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
