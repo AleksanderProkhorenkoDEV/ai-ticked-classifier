@@ -2,7 +2,6 @@ package dev.aprokhorenko.ticked_classifier.services;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.aprokhorenko.ticked_classifier.dto.ArchivedTicketRequestDTO;
@@ -11,6 +10,7 @@ import dev.aprokhorenko.ticked_classifier.dto.TicketClasification;
 import dev.aprokhorenko.ticked_classifier.dto.TicketStatsDTO;
 import dev.aprokhorenko.ticked_classifier.dto.UpdateStatusTicketDTO;
 import dev.aprokhorenko.ticked_classifier.entities.Ticket;
+import dev.aprokhorenko.ticked_classifier.entities.TicketCategory;
 import dev.aprokhorenko.ticked_classifier.entities.TicketStatus;
 import dev.aprokhorenko.ticked_classifier.entities.TicketUrgency;
 import dev.aprokhorenko.ticked_classifier.repositories.TicketRepository;
@@ -28,9 +28,10 @@ public class TicketServices {
         this.ticketClasificationServices = ticketClasificationServices;
     }
 
-    public Page<Ticket> getAllTickeds(Integer page, Integer sizePerPage) {
-        Pageable pageable = PageRequest.of(page, sizePerPage);
-        return tickedRepository.findAll(pageable);
+    public Page<Ticket> getAllTickeds(int page, int size,
+        TicketUrgency urgency, TicketCategory category, String search) {
+        String term = (search == null || search.isBlank()) ? null : search.trim();
+        return tickedRepository.findFiltered(urgency, category, term, PageRequest.of(page, size));
     }
 
     public Ticket getTickedById(Long id) {
