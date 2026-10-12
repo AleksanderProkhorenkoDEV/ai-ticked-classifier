@@ -2,6 +2,7 @@ import { getTickets, TicketFilters, TicketRow } from "../../lib/action/tickets";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { baseStyles } from "../../css/base-styles.css";
+import { tableStyle } from "../../css/table/table-dashboard.css";
 
 const PAGE_SIZE = 10;
 
@@ -43,175 +44,11 @@ export class TicketTable extends LitElement {
     static styles?: CSSResultGroup = [
         css`
             :host {
-                display: block;
-                font-family: "Saira", sans-serif;
-            }
- 
-            .table-card {
-                background-color: var(--color-white);
-                border-radius: 0.3rem;
-                overflow: hidden;
-            }
- 
-            /* ---- barra superior: búsqueda + filtros ---- */
-            .toolbar {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                justify-content: space-between;
-                gap: 1rem;
-                padding: 1rem 1.5rem;
-                border-bottom: 1px solid var(--line);
-            }
- 
-            .search {
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                flex: 1 1 14rem;
-            }
- 
-            .search img {
-                width: 1.1rem;
-                height: 1.1rem;
-            }
- 
-            .search input {
-                flex: 1;
-                border: none;
-                outline: none;
-                background: transparent;
-                font: inherit;
-                color: var(--color-text);
-            }
- 
-            .filters {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 1.5rem;
-            }
- 
-            select {
-                border: none;
-                background: transparent;
-                font: inherit;
-                color: var(--color-text);
-                cursor: pointer;
-                padding: 0.25rem 0;
-            }
- 
-            /* foco visible para teclado */
-            input:focus-visible,
-            select:focus-visible,
-            button:focus-visible {
-                outline: 2px solid var(--color-primary);
-                outline-offset: 2px;
-                border-radius: 0.2rem;
-            }
- 
-            /* ---- tabla ---- */
-            .table-wrap {
-                overflow-x: auto;
-            }
- 
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
- 
-            td {
-                padding: 1.6rem 1rem;
-                border-bottom: 1px solid var(--line);
-                white-space: nowrap;
-                vertical-align: middle;
-            }
- 
-            tbody tr:last-child td {
-                border-bottom: none;
-            }
- 
-            .cell-id {
-                padding-left: 1.5rem;
-                color: var(--color-text);
-            }
- 
-            .cell-desc {
-                max-width: 18rem;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
- 
-            /* colores según el diseño de Figma */
-            .urgency { color: var(--color-red); }
-            .category { color: var(--color-yellow); }
-            .feeling { color: var(--color-text); }
- 
-            .status--abierto,
-            .status--en_progreso { color: var(--color-primary); }
-            .status--cerrado { color: var(--color-green); }
-            .status--archivado { color: var(--color-text); opacity: 0.6; }
- 
-            .empty,
-            .error {
-                padding: 2rem 1.5rem;
-                text-align: center;
-            }
- 
-            .error { color: var(--color-red); }
- 
-            /* ---- paginación ---- */
-            .pagination {
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                gap: 1rem;
-                padding: 1rem 1.5rem;
-                border-top: 1px solid var(--line);
-            }
- 
-            .pagination button {
-                font: inherit;
-                color: var(--color-primary);
-                background: transparent;
-                border: 1px solid var(--color-primary);
-                border-radius: 0.4rem;
-                padding: 0.4rem 0.9rem;
-                cursor: pointer;
-            }
- 
-            .pagination button:disabled {
-                color: var(--color-text);
-                border-color: var(--line);
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
- 
-            /* oculto a la vista pero legible por lectores de pantalla */
-            .sr-only {
-                position: absolute;
-                width: 1px;
-                height: 1px;
-                padding: 0;
-                margin: -1px;
-                overflow: hidden;
-                clip: rect(0, 0, 0, 0);
-                white-space: nowrap;
-                border: 0;
-            }
- 
-            @media (max-width: 768px) {
-                .col-desc { display: none; }
-                td { padding: 1.2rem 0.75rem; }
-                .pagination { justify-content: space-between; }
-            }
-        `,
-        // la línea separadora deriva del color de texto, igual que la sombra de .incoming
-        css`
-            :host {
                 --line: rgb(from var(--color-text) r g b / 0.15);
             }
         `,
         baseStyles,
+        tableStyle
     ];
 
     connectedCallback() {
@@ -278,12 +115,10 @@ export class TicketTable extends LitElement {
                 <td class="cell-id">#&nbsp;${ticket.id}</td>
                 <td>${ticket.title}</td>
                 <td class="cell-desc col-desc" title=${ticket.description}>${ticket.description}</td>
-                <td class="urgency">${URGENCY_LABEL[ticket.urgency] ?? ticket.urgency}</td>
-                <td class="category">${CATEGORY_LABEL[ticket.category] ?? ticket.category}</td>
-                <td class="feeling">${FEELING_LABEL[ticket.feeling] ?? ticket.feeling}</td>
-                <td class="status status--${ticket.status.toLowerCase()}">
-                    ${STATUS_LABEL[ticket.status] ?? ticket.status}
-                </td>
+                <td class="urgency urgency--${ticket.urgency.toLowerCase()}">${URGENCY_LABEL[ticket.urgency] ?? ticket.urgency}</td>
+                <td class="category category--${ticket.category.toLowerCase()}">${CATEGORY_LABEL[ticket.category] ?? ticket.category}</td>
+                <td class="feeling feeling--${ticket.feeling.toLowerCase()}">${FEELING_LABEL[ticket.feeling] ?? ticket.feeling}</td>
+                <td class="status status--${ticket.status.toLowerCase()}">${STATUS_LABEL[ticket.status] ?? ticket.status}</td>
             </tr>
         `;
     }
@@ -324,7 +159,7 @@ export class TicketTable extends LitElement {
                 <div class="table-wrap" aria-busy=${this._loading ? "true" : "false"}>
                     <table>
                         <caption class="sr-only">Lista de tickets</caption>
-                        <thead class="sr-only">
+                        <thead >
                             <tr>
                                 <th scope="col">Número</th>
                                 <th scope="col">Título</th>
