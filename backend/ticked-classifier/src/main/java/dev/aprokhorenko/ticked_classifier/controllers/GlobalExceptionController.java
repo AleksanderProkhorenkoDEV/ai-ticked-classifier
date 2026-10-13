@@ -20,6 +20,12 @@ public class GlobalExceptionController {
                 .body(new GlobalResponseDTO("Entidad no encontrada", HttpStatus.NOT_FOUND.value()));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<GlobalResponseDTO> handleIllegalArgument() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new GlobalResponseDTO("Valor no válido", HttpStatus.BAD_REQUEST.value()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<GlobalResponseDTO> handleValidation(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult().getFieldErrors().stream()
