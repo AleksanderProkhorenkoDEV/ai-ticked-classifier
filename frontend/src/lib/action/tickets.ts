@@ -47,3 +47,19 @@ export const getTickets = async (
 
     return response.json();
 }
+
+
+export const setTicketArchived = async (id: number, archived: boolean): Promise<void> => {
+    const response = await fetch(`${API_URL}/tickets/archived/${id}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ archived }),
+    });
+
+    if (!response.ok) {
+        const action = archived ? 'archivar' : 'desarchivar';
+        throw new Error(`Error al ${action} el ticket: ${response.status}`);
+    }
+};
