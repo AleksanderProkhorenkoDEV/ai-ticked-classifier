@@ -20,7 +20,10 @@ export class DashboardCard extends LitElement {
                 background-color: var(--color-white);
 
                 aspect-ratio: 1/1;
-                width:150px;
+                width:100%;
+                max-width:150px;
+
+                padding:.5rem;
 
                 border-radius:.3rem;
 
@@ -34,7 +37,7 @@ export class DashboardCard extends LitElement {
             }
 
             .card__number{
-                font-size: 35px;
+                font-size: clamp(1.5rem, 6vw, 35px);
                 font-weight: 800;
             }
 
@@ -52,6 +55,8 @@ export class DashboardCard extends LitElement {
 
             .card__text{
                 text-transform:uppercase;
+                text-align:center;
+                font-size:.85rem;
             }
         `,
         baseStyles
