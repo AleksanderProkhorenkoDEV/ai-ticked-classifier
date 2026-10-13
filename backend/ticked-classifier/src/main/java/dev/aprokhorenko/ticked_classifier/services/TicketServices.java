@@ -53,7 +53,9 @@ public class TicketServices {
     @Transactional
     public void updateStatus(UpdateStatusTicketDTO request, Long id) {
         Ticket ticket = getTickedById(id);
-        ticket.changeStatus(request.getStatus());
+        TicketStatus status = request.getStatus();
+        ticket.changeStatus(status);
+        ticket.changeArchived(TicketStatus.ARCHIVADO.equals(status));
     }
 
     @Transactional
