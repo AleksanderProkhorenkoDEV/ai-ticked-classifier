@@ -20,9 +20,15 @@ export class AppIndex extends LitElement {
   @query('toast-notification')
   private _toast!: ToastNotification;
 
+  private _showToast = (e: CustomEvent<{ message: string; type?: 'success' | 'error' }>) => {
+    this._toast.show(e.detail.message, e.detail.type ?? 'success');
+  }
+
   render() {
     return html`
-      <main role="main" tabindex="-1" @ticket-created=${(e: CustomEvent) => this._toast.show(e.detail.message, e.detail.type ?? 'success')}>
+      <main role="main" tabindex="-1"
+        @ticket-created=${this._showToast}
+        @ticket-archived=${this._showToast}>
         <slot></slot>
         <toast-notification></toast-notification>
       </main>
