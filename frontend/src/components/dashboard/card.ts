@@ -58,6 +58,16 @@ export class DashboardCard extends LitElement {
                 text-align:center;
                 font-size:.85rem;
             }
+
+            @media (height <= 50rem){
+                .card{
+                    max-width:112px;
+                }
+
+                .card__number{
+                    font-size:1.5rem;
+                }
+            }
         `,
         baseStyles
     ]

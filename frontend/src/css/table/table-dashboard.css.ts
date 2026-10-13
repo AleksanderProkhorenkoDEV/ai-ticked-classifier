@@ -2,7 +2,13 @@ import { css } from 'lit';
 
 export const tableStyle = css`
   :host {
-    display: block;
+    /* El componente crece hasta llenar el espacio que deja el resto de la pagina.
+       El min-height es la red de seguridad: si la pantalla es muy baja, la pagina
+       vuelve a hacer scroll en vez de recortar la tabla. */
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 16rem;
+
     width: 100%;
 
     font-family: 'Saira', sans-serif;
@@ -12,7 +18,10 @@ export const tableStyle = css`
     display: flex;
     flex-direction: column;
 
-    height: clamp(26rem, 70vh, 40rem);
+    /* Ocupa el alto del host con tope, para que en pantallas grandes no crezca sin fin */
+    flex: 1;
+    max-height: 40rem;
+    min-height: 0;
 
     background-color: var(--color-white);
 

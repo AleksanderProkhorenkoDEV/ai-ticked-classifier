@@ -166,20 +166,25 @@ aside{
     min-width:0;
 
     width:min(100% - 2rem, 1200px);
-    height:auto;
+
+    /* Ocupa el alto disponible en vez de crecer: asi la tabla recibe el espacio
+       sobrante y la paginacion queda visible sin scroll de pagina. */
+    height:100%;
 
     display:flex;
     flex-direction:column;
     align-items:center;
     gap:clamp(1rem, 2vw, 2rem);
 
-    margin:auto;
+    margin-inline:auto;
     padding-block:1rem;
 }
 
 .content__header{
     min-height:4rem;
     width:100%;
+
+    flex:none;
     
     display:flex;
     flex-wrap:wrap;

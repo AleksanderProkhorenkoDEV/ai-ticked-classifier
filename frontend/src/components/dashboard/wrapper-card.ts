@@ -11,6 +11,8 @@ export class WrapperCard extends LitElement {
     static styles?: CSSResultGroup = [
         css` 
             :host{
+                flex:none;
+
                 width:100%;
             }
             
@@ -20,6 +22,13 @@ export class WrapperCard extends LitElement {
                 gap:clamp(1rem, 3vw, 3rem);
                 align-items:center;
                 justify-content:center;
+            }
+
+            @media (height <= 50rem){
+                .content__cards{
+                    grid-template-columns:repeat(auto-fit, minmax(6rem, 7rem));
+                    gap:clamp(.75rem, 3vw, 1.5rem);
+                }
             }
         `
     ]
