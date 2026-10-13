@@ -31,6 +31,8 @@ export class Navigation extends LitElement {
 
                 width: 90%;
                 height: fit-content;
+
+                gap: 1.2rem;
                 
                 margin: auto;
             }
