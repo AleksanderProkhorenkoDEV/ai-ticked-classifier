@@ -34,8 +34,9 @@ a{
   color: var(--color-text)
 }
 
-h1,h2,h3, p{
+h1,h2,h3, p, main{
   margin:0;
+  padding: 0;
 }
 
 /* ---- DEFINE THE FONT FACE OF THE APP ---- */

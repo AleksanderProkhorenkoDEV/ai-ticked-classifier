@@ -1,1 +1,7 @@
+import "./navigation/create-ticket-button.ts"
+import "./dashboard/wrapper-card.ts"
+import "./dashboard/ticket-table.ts"
 import "./navigation/navigate.ts"
+import "./form/create-ticket.ts"
+import "./dashboard/card.ts"
+import "./toast/toast.ts"

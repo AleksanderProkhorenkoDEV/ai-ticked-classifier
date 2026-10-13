@@ -1,13 +1,13 @@
 import { PageController } from "@open-cells/page-controller";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 
 @customElement('navigation-menu')
 export class Navigation extends LitElement {
     pageController = new PageController(this);
 
-    @state()
-    private _currentPathName: string = "Home"
+    @property({ type: String, attribute: 'current-path' })
+    private currentPathName = "";
 
     @property({ type: String, reflect: true })
     orientation: 'horizontal' | 'vertical' = 'horizontal';
@@ -29,9 +29,12 @@ export class Navigation extends LitElement {
                 flex-direction: column;
                 align-items: flex-start;
 
-                width: fit-content;
+                width: 90%;
+                height: fit-content;
+
+                gap: 1.2rem;
                 
-                margin-left: 0;
+                margin: auto;
             }
 
             :host([orientation="horizontal"]) {
@@ -59,7 +62,6 @@ export class Navigation extends LitElement {
 
     handleChengePath = (e: Event, routeName: string) => {
         e.preventDefault()
-        this._currentPathName = routeName;
         this.pageController.navigate(routeName);
     }
 
@@ -68,7 +70,7 @@ export class Navigation extends LitElement {
             ${this._navRoutes.map((item) => html`
                   <a
                     href=${item.path}
-                    class=${this._currentPathName === item.name ? 'active' : ''}
+                    class=${this.currentPathName === item.path ? 'active' : ''}
                     @click="${(e: Event) => this.handleChengePath(e, item.name)}"
                   >
                     ${item.label}
