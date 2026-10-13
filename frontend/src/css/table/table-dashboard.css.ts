@@ -226,62 +226,36 @@ export const tableStyle = css`
     opacity: 0.6;
   }
 
-  /* ---- ARCHIVE ACTION ---- */
+  /* ---- STATUS SELECT ---- */
 
-  /* Igual que la primera columna, se queda fijada al hacer scroll horizontal */
-  th.col-actions,
-  td.col-actions {
-    position: sticky;
-    right: 0;
-
-    background-color: var(--color-white);
-
-    text-align: right;
-
-    z-index: 1;
-  }
-
-  th.col-actions {
-    z-index: 2; /* por encima del thead sticky */
-  }
-
-  td.col-actions {
-    box-shadow: -1px 0 0 var(--line);
-  }
-
-  .archive-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-
-    font: inherit;
-    font-size: 0.85rem;
-
-    color: var(--color-primary);
-    background: transparent;
-    border: 1px solid var(--color-primary);
-    border-radius: 0.4rem;
-
-    padding: 0.35rem 0.7rem;
+  .cell-status {
+    width: 1%;
 
     white-space: nowrap;
+  }
+
+  /* El color por estado lo ponen las reglas .status--* de mas arriba */
+  .status-select {
+    font: inherit;
+
+    background: transparent;
+
+    border: 1px solid transparent;
+    border-radius: 0.3rem;
+
+    padding: 0.3rem 0.4rem;
 
     cursor: pointer;
   }
 
-  .archive-btn:hover:not(:disabled) {
-    background-color: rgb(from var(--color-primary) r g b / 0.1);
+  .status-select:hover:not(:disabled) {
+    border-color: var(--line);
   }
 
-  .archive-btn:disabled {
+  .status-select:disabled {
     opacity: 0.5;
 
     cursor: not-allowed;
-  }
-
-  .archive-btn img {
-    width: 1rem;
-    height: 1rem;
   }
 
   .empty,
