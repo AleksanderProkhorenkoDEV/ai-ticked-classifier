@@ -3,8 +3,7 @@ import { css } from 'lit';
 export const tableStyle = css`
   :host {
     display: block;
-
-    height: 770px;
+    width: 100%;
 
     font-family: 'Saira', sans-serif;
   }
@@ -13,7 +12,7 @@ export const tableStyle = css`
     display: flex;
     flex-direction: column;
 
-    height: 100%;
+    height: clamp(26rem, 70vh, 40rem);
 
     background-color: var(--color-white);
 
@@ -122,6 +121,25 @@ export const tableStyle = css`
 
   th:first-child {
     padding-left: 1.5rem; /* alineado con .cell-id */
+  }
+
+  /* Con scroll horizontal la primera columna se queda fijada */
+  th:first-child,
+  td.cell-id {
+    position: sticky;
+    left: 0;
+
+    background-color: var(--color-white);
+
+    z-index: 1;
+  }
+
+  th:first-child {
+    z-index: 2; /* por encima del thead sticky */
+  }
+
+  td.cell-id {
+    box-shadow: 1px 0 0 var(--line);
   }
 
   td {
@@ -264,15 +282,58 @@ export const tableStyle = css`
     border: 0;
   }
 
-  @media (max-width: 768px) {
+  @media (width <= 768px) {
     .col-desc {
       display: none;
     }
+
+    /* Fuerza el scroll horizontal en lugar de aplastar las columnas */
+    table {
+      min-width: 40rem;
+    }
+
     td {
       padding: 1.2rem 0.75rem;
     }
+
+    .toolbar {
+      padding: 1rem;
+    }
+
+    .search {
+      flex: 1 1 100%;
+    }
+
+    .filters {
+      width: 100%;
+      gap: 1rem;
+    }
+
+    .filters select {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
     .pagination {
       justify-content: space-between;
+    }
+  }
+
+  @media (width <= 480px) {
+    th,
+    td {
+      padding: 0.8rem 0.6rem;
+      font-size: 0.8rem;
+    }
+
+    .pagination {
+      padding: 0.8rem 1rem;
+      gap: 0.5rem;
+    }
+
+    .pagination button {
+      flex: 1;
+      padding: 0.4rem 0.5rem;
     }
   }
 `;
