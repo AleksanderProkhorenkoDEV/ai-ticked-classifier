@@ -11,12 +11,13 @@ export class WrapperCard extends LitElement {
     static styles?: CSSResultGroup = [
         css` 
             :host{
-                width:fit-content;
+                width:100%;
             }
             
             .content__cards{
-                display:flex;
-                gap:3rem;
+                display:grid;
+                grid-template-columns:repeat(auto-fit, minmax(8rem, 9.4rem));
+                gap:clamp(1rem, 3vw, 3rem);
                 align-items:center;
                 justify-content:center;
             }
