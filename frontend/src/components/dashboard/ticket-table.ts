@@ -1,4 +1,4 @@
-import { getTickets, TicketFilters, TicketRow } from "../../lib/action/tickets";
+import { getTickets, setTicketStatus, TicketFilters, TicketRow, TICKET_STATUSES } from "../../lib/action/tickets";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { baseStyles } from "../../css/base-styles.css";
@@ -37,6 +37,9 @@ export class TicketTable extends LitElement {
 
     @state()
     private _filters: TicketFilters = { search: "", category: "", urgency: "" };
+
+    @state()
+    private _updatingId?: number;
 
     private _debounceTimer?: number;
     private _requestId = 0;
@@ -109,7 +112,50 @@ export class TicketTable extends LitElement {
         this._load();
     }
 
+    // El backend responde con un GlobalResponseDTO sin el ticket, asi que solo se
+    // actualiza la fila afectada en local: evita el refetch de la pagina y conserva
+    // la paginacion y los filtros activos.
+    private _onChangeStatus = async (ticket: TicketRow, event: Event) => {
+        const select = event.target as HTMLSelectElement;
+        const status = select.value;
+
+        if (status === ticket.status) return;
+
+        this._updatingId = ticket.id;
+
+        try {
+            await setTicketStatus(ticket.id, status);
+
+            this._tickets = this._tickets.map((row) =>
+                row.id === ticket.id ? { ...row, status } : row
+            );
+
+            this._notifyTicketChange(`Ticket movido a ${STATUS_LABEL[status] ?? status}`);
+        } catch (error) {
+            console.error("No se pudo cambiar el estado del ticket", error);
+            // El estado no cambio, asi que se devuelve el select a su valor anterior
+            select.value = ticket.status;
+            this._notifyTicketChange(
+                "No se pudo actualizar el ticket, inténtalo de nuevo",
+                "error"
+            );
+        } finally {
+            this._updatingId = undefined;
+        }
+    };
+
+    // Las tarjetas de estadisticas escuchan este evento en window para actualizarse
+    private _notifyTicketChange(message: string, type: "success" | "error" = "success") {
+        this.dispatchEvent(new CustomEvent("ticket-archived", {
+            detail: { message, type },
+            bubbles: true,
+            composed: true,
+        }));
+    }
+
     private _renderRow(ticket: TicketRow) {
+        const isUpdating = this._updatingId === ticket.id;
+
         return html`
             <tr>
                 <td class="cell-id">#&nbsp;${ticket.id}</td>
@@ -118,7 +164,20 @@ export class TicketTable extends LitElement {
                 <td class="urgency urgency--${ticket.urgency.toLowerCase()}">${URGENCY_LABEL[ticket.urgency] ?? ticket.urgency}</td>
                 <td class="category category--${ticket.category.toLowerCase()}">${CATEGORY_LABEL[ticket.category] ?? ticket.category}</td>
                 <td class="feeling feeling--${ticket.feeling.toLowerCase()}">${FEELING_LABEL[ticket.feeling] ?? ticket.feeling}</td>
-                <td class="status status--${ticket.status.toLowerCase()}">${STATUS_LABEL[ticket.status] ?? ticket.status}</td>
+                <td class="cell-status">
+                    <select
+                        class="status-select status--${ticket.status.toLowerCase()}"
+                        aria-label="Cambiar el estado del ticket ${ticket.id}"
+                        ?disabled=${isUpdating}
+                        @change=${(e: Event) => this._onChangeStatus(ticket, e)}
+                    >
+                        ${TICKET_STATUSES.map((status) => html`
+                            <option value=${status} ?selected=${status === ticket.status}>
+                                ${STATUS_LABEL[status] ?? status}
+                            </option>
+                        `)}
+                    </select>
+                </td>
             </tr>
         `;
     }

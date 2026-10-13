@@ -226,6 +226,38 @@ export const tableStyle = css`
     opacity: 0.6;
   }
 
+  /* ---- STATUS SELECT ---- */
+
+  .cell-status {
+    width: 1%;
+
+    white-space: nowrap;
+  }
+
+  /* El color por estado lo ponen las reglas .status--* de mas arriba */
+  .status-select {
+    font: inherit;
+
+    background: transparent;
+
+    border: 1px solid transparent;
+    border-radius: 0.3rem;
+
+    padding: 0.3rem 0.4rem;
+
+    cursor: pointer;
+  }
+
+  .status-select:hover:not(:disabled) {
+    border-color: var(--line);
+  }
+
+  .status-select:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+  }
+
   .empty,
   .error {
     padding: 2rem 1.5rem;

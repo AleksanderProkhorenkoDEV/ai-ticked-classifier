@@ -53,13 +53,19 @@ public class TicketServices {
     @Transactional
     public void updateStatus(UpdateStatusTicketDTO request, Long id) {
         Ticket ticket = getTickedById(id);
-        ticket.changeStatus(request.getStatus());
+        TicketStatus status = request.getStatus();
+        ticket.changeStatus(status);
+        ticket.changeArchived(TicketStatus.ARCHIVADO.equals(status));
     }
 
     @Transactional
     public void archivedTicket(ArchivedTicketRequestDTO request, Long id) {
         Ticket ticket = getTickedById(id);
-        ticket.changeArchived(request.getArchived());
+        Boolean archived = request.getArchived();
+        ticket.changeArchived(archived);
+        // El estado cambia en la misma transaccion, para que archivar mueva tambien la
+        // tarjeta de "open" (que cuenta por status) y no solo la de "resolved".
+        ticket.changeStatus(archived ? TicketStatus.ARCHIVADO : TicketStatus.ABIERTO);
     }
 
     public TicketStatsDTO getTicketStats() {
