@@ -226,6 +226,64 @@ export const tableStyle = css`
     opacity: 0.6;
   }
 
+  /* ---- ARCHIVE ACTION ---- */
+
+  /* Igual que la primera columna, se queda fijada al hacer scroll horizontal */
+  th.col-actions,
+  td.col-actions {
+    position: sticky;
+    right: 0;
+
+    background-color: var(--color-white);
+
+    text-align: right;
+
+    z-index: 1;
+  }
+
+  th.col-actions {
+    z-index: 2; /* por encima del thead sticky */
+  }
+
+  td.col-actions {
+    box-shadow: -1px 0 0 var(--line);
+  }
+
+  .archive-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    font: inherit;
+    font-size: 0.85rem;
+
+    color: var(--color-primary);
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    border-radius: 0.4rem;
+
+    padding: 0.35rem 0.7rem;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+  }
+
+  .archive-btn:hover:not(:disabled) {
+    background-color: rgb(from var(--color-primary) r g b / 0.1);
+  }
+
+  .archive-btn:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+  }
+
+  .archive-btn img {
+    width: 1rem;
+    height: 1rem;
+  }
+
   .empty,
   .error {
     padding: 2rem 1.5rem;
