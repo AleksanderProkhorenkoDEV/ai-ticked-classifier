@@ -33,14 +33,26 @@ export class WrapperCard extends LitElement {
         `
     ]
 
-    async connectedCallback() {
+    connectedCallback() {
         super.connectedCallback();
+        this._loadStats();
+        window.addEventListener("ticket-created", this._loadStats);
+        window.addEventListener("ticket-archived", this._loadStats);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener("ticket-created", this._loadStats);
+        window.removeEventListener("ticket-archived", this._loadStats);
+        super.disconnectedCallback();
+    }
+
+    private _loadStats = async () => {
         try {
             this._stats = await getTicketStats();
         } catch (error) {
             console.error('No se pudieron cargar las estadísticas', error);
         }
-    }
+    };
 
     render() {
         return html` 
