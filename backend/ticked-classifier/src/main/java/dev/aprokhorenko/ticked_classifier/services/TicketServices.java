@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import dev.aprokhorenko.ticked_classifier.dto.ArchivedTicketRequestDTO;
 import dev.aprokhorenko.ticked_classifier.dto.CreateTicketRequestDTO;
 import dev.aprokhorenko.ticked_classifier.dto.TicketClasification;
 import dev.aprokhorenko.ticked_classifier.dto.TicketStatsDTO;
@@ -56,16 +55,6 @@ public class TicketServices {
         TicketStatus status = request.getStatus();
         ticket.changeStatus(status);
         ticket.changeArchived(TicketStatus.ARCHIVADO.equals(status));
-    }
-
-    @Transactional
-    public void archivedTicket(ArchivedTicketRequestDTO request, Long id) {
-        Ticket ticket = getTickedById(id);
-        Boolean archived = request.getArchived();
-        ticket.changeArchived(archived);
-        // El estado cambia en la misma transaccion, para que archivar mueva tambien la
-        // tarjeta de "open" (que cuenta por status) y no solo la de "resolved".
-        ticket.changeStatus(archived ? TicketStatus.ARCHIVADO : TicketStatus.ABIERTO);
     }
 
     public TicketStatsDTO getTicketStats() {
