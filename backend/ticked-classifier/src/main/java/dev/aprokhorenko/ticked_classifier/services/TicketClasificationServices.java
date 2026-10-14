@@ -51,8 +51,6 @@ public class TicketClasificationServices {
         try {
             return this.mapper.readValue(rawOutput, TicketClasification.class);
         } catch (JacksonException e) {
-            // tools.jackson.core.JacksonException, not the Spring Boot one: that one
-            // extends IllegalArgumentException and this catch would never have fired.
             log.severe("Error al convertir el JSON");
             throw new RuntimeException("El modelo tiene un formato inesperado", e);
         }
