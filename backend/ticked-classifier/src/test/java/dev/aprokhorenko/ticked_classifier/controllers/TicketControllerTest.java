@@ -29,7 +29,6 @@ import dev.aprokhorenko.ticked_classifier.dto.TicketStatsDTO;
 import dev.aprokhorenko.ticked_classifier.entities.Ticket;
 import dev.aprokhorenko.ticked_classifier.entities.TicketCategory;
 import dev.aprokhorenko.ticked_classifier.entities.TicketFeeling;
-import dev.aprokhorenko.ticked_classifier.entities.TicketStatus;
 import dev.aprokhorenko.ticked_classifier.entities.TicketUrgency;
 import dev.aprokhorenko.ticked_classifier.mappers.TicketMapper;
 import dev.aprokhorenko.ticked_classifier.services.TicketServices;
