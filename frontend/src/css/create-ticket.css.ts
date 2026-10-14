@@ -11,8 +11,13 @@ export const createTicketStyle = css`
 :host {
     display:block;
     height:100%;
+
+    --gutter-inline: clamp(1.5rem, 5vw, 5rem);
+    --gutter-block: clamp(1.5rem, 4vh, 3rem);
 }
 
+/* baseStyles resets padding and margin on main, and it is loaded after this
+   stylesheet, so the gutters live on the grid items instead of here. */
 main {
     box-sizing:border-box;
 
@@ -20,16 +25,13 @@ main {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto 1fr;
 
-    gap:2rem 3rem;
+    gap: var(--gutter-block) 3rem;
 
     width: 100%;
 
     /* min-height instead of height: on short screens the page grows and scrolls
        instead of overflowing the row it lives in. */
     min-height: 100%;
-
-    padding-inline: clamp(1.25rem, 5vw, 5rem);
-    padding-block: clamp(1.5rem, 4vh, 3rem);
 }
 
 /* Both columns stretch to the full track width so the cards inside can resolve
@@ -39,6 +41,8 @@ aside {
    grid-column: 1/2;
 
    width:100%;
+
+   padding-inline: var(--gutter-inline);
 
    display:flex;
    align-items:center;
@@ -51,6 +55,8 @@ article {
 
     width:100%;
 
+    padding-inline: var(--gutter-inline);
+
     display:flex;
     align-items:center;
     justify-content:center;
@@ -58,14 +64,19 @@ article {
 
 /* ---- NAVIGATION ---- */
 
-/* The left gutter now comes from the padding of <main>, so the link no longer
-   needs a hardcoded offset. */
+/* Spans both columns so it is centered on the page instead of sitting in the
+   corner of the left one. */
 .link{
     display:flex;
     align-items: center;
     gap:0.2rem;
 
+    grid-column: 1 / -1;
+    justify-self: center;
+
     width:fit-content;
+
+    margin-block-start: var(--gutter-block);
 
     font-weight:bold;
 }
@@ -177,6 +188,12 @@ article {
            would push the cards into an implicit second column. */
         grid-row: auto;
         grid-column: 1;
+    }
+
+    /* The rows are auto here, so the form card would end flush against the
+       bottom edge of the viewport. */
+    article {
+        padding-block-end: var(--gutter-block);
     }
 }
 
