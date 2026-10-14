@@ -33,6 +33,8 @@ class TicketClasificationServicesTest {
     private static final String TITLE = "Error al subir imagenes";
     private static final String DESCRIPTION = "Al subir una imagen sale un error 500 en la pantalla de perfil.";
 
+    // ChatModel is an interface, so Mockito builds a fake implementation of it in memory.
+    // No network, no API key, no bill, and always the same answer.
     @Mock
     private ChatModel chatModel;
 
@@ -40,13 +42,22 @@ class TicketClasificationServicesTest {
 
     @BeforeEach
     void setUp() {
+        // Built by hand on purpose: no Spring context, so the test runs in milliseconds.
         service = new TicketClasificationServices(chatModel);
     }
 
+    // Called per test instead of @BeforeEach on purpose: MockitoExtension runs in strict mode
+    // and fails a test that declares a stub it never ends up using.
     private void mockLlmAnswer(String rawOutput) {
+        // The real Spring AI types, not a hand made object. The nesting mirrors what the model
+        // actually returns, so if Spring AI ever changes the shape these tests break.
         ChatResponse response = new ChatResponse(List.of(new Generation(new AssistantMessage(rawOutput))));
+        // any(Prompt.class) is a wildcard: reply with this whatever prompt comes in.
         when(chatModel.call(any(Prompt.class))).thenReturn(response);
     }
+
+    /* An LLM has three outcomes in production, and all three deserve a test:
+       a good answer, no answer at all, and an answer that is garbage. */
 
     @Test
     @DisplayName("Devuelve la clasificacion que responde el LLM")
@@ -71,9 +82,11 @@ class TicketClasificationServicesTest {
 
         service.classifyTicket(TITLE, DESCRIPTION);
 
+        // ArgumentCaptor stores the argument instead of only matching it, so it can be inspected after.
         ArgumentCaptor<Prompt> captor = ArgumentCaptor.forClass(Prompt.class);
         verify(chatModel).call(captor.capture());
 
+        // Prompt.getContents() flattens every message into one String.
         assertThat(captor.getValue().getContents())
                 .contains(TITLE)
                 .contains(DESCRIPTION);
@@ -96,6 +109,8 @@ class TicketClasificationServicesTest {
     void wrapsTheMalformedJson() {
         mockLlmAnswer("esto no es un json");
 
+        // Fails if the catch ever goes back to org.springframework.boot.json.JsonParseException:
+        // that class extends IllegalArgumentException and the handler stops firing entirely.
         assertThatThrownBy(() -> service.classifyTicket(TITLE, DESCRIPTION))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("El modelo tiene un formato inesperado")
@@ -110,6 +125,8 @@ class TicketClasificationServicesTest {
                 {"category":"NO_EXISTE","feeling":"NEUTRO","urgency":"BAJA"}
                 """);
 
+        // The model can invent enum values, so this is as real as broken JSON.
+        // Escaping as IllegalArgumentException would make the API answer 400 instead of 500.
         assertThatThrownBy(() -> service.classifyTicket(TITLE, DESCRIPTION))
                 .hasMessage("El modelo tiene un formato inesperado")
                 .isNotInstanceOf(IllegalArgumentException.class);

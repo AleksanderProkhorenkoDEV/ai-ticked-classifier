@@ -132,6 +132,9 @@ class TicketServicesTest {
 
     /* ---- getAllTickeds ---- */
 
+    // The JPQL only filters when the parameter is null, so blank input has to be normalised
+    // to null in the service. Without this the frontend sending an empty search box would
+    // produce a LIKE '%%' filter at best.
     @Test
     @DisplayName("Un search vacio se normaliza a null antes de llegar al repositorio")
     void blankSearchBecomesNull() {

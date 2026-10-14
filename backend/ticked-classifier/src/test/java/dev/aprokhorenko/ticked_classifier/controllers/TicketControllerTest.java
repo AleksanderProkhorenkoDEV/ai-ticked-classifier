@@ -34,13 +34,20 @@ import dev.aprokhorenko.ticked_classifier.mappers.TicketMapper;
 import dev.aprokhorenko.ticked_classifier.services.TicketServices;
 import jakarta.persistence.EntityNotFoundException;
 
+// Loads only the web layer: no database and no LLM. Note the package, it moved in Spring
+// Boot 4 (org.springframework.boot.webmvc.test.autoconfigure); the old one no longer exists.
 @WebMvcTest(controllers = TicketController.class)
+// TicketMapper is a @Component so the slice does not pick it up. Importing it means the real
+// entity to DTO mapping is exercised instead of a mock that would return nulls.
 @Import(TicketMapper.class)
+// Webconfig is a WebMvcConfigurer, so the slice DOES load it, and it fails to start without this.
 @TestPropertySource(properties = "app.cors.allowed-origins=http://localhost:5173")
 class TicketControllerTest {
 
     private static final LocalDateTime FIXED_DATE = LocalDateTime.of(2026, 1, 15, 10, 30);
 
+    // @MockBean was removed in Spring Boot 4, @MockitoBean is the replacement.
+    // The service is mocked, so these tests never reach the database or the model.
     @MockitoBean
     private TicketServices tickedServices;
 
@@ -51,10 +58,12 @@ class TicketControllerTest {
         Ticket ticket = new Ticket("Error al subir imagenes", "Sale un error 500",
                 TicketCategory.BUG, TicketUrgency.ALTA, TicketFeeling.NEGATIVO);
         ticket.setId(7L);
+        // Pinned so the JSON comparison below is deterministic.
         ticket.setDate(FIXED_DATE);
         return ticket;
     }
 
+    /* MockMvcTester has no hasStatus400()/hasStatus404() shorthands, only hasStatus(HttpStatus). */
     /* ---- GET /tickets ---- */
 
     @Test

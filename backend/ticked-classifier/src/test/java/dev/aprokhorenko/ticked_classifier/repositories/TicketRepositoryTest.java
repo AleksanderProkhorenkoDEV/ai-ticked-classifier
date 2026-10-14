@@ -21,6 +21,9 @@ import dev.aprokhorenko.ticked_classifier.entities.TicketStatus;
 import dev.aprokhorenko.ticked_classifier.entities.TicketUrgency;
 import jakarta.persistence.EntityManager;
 
+// Real MySQL through Testcontainers: findFiltered is JPQL with LOWER/LIKE/ORDER BY, and it is
+// the one thing a mocked repository cannot reach. @ServiceConnection supplies the datasource,
+// so no environment variables are needed.
 @DataJpaTest
 @Import(TestcontainersConfiguration.class)
 class TicketRepositoryTest {
@@ -35,6 +38,8 @@ class TicketRepositoryTest {
         return new Ticket(title, "Descripcion de " + title, category, urgency, feeling);
     }
 
+    // Flush so ORDER BY t.date DESC has real rows to sort, and clear the persistence context
+    // so the assertions read from the database instead of the first level cache.
     private void saveAndFlush(Ticket... tickets) {
         repository.saveAllAndFlush(List.of(tickets));
         entityManager.clear();
@@ -105,6 +110,8 @@ class TicketRepositoryTest {
     @Test
     @DisplayName("findFiltered ordena del mas nuevo al mas viejo")
     void findFilteredSortsByDateDescending() {
+        // The column is updatable = false, which only affects UPDATE statements, so setting a
+        // past date still lands on the INSERT. Needed to prove the DESC ordering.
         Ticket old = ticket("Antiguo", TicketCategory.BUG, TicketUrgency.BAJA, TicketFeeling.NEUTRO);
         old.setDate(LocalDateTime.of(2026, 1, 1, 9, 0));
         Ticket recent = ticket("Reciente", TicketCategory.BUG, TicketUrgency.BAJA, TicketFeeling.NEUTRO);
