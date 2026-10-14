@@ -5,9 +5,6 @@ export const createTicketStyle = css`
 
 /* ---- CONTAINERS ---- */
 
-/* The host is the scroll container of the app shell. It was display:inline, which
-   left <main> resolving its percentages against the shell instead of the host.
-   height has to be explicit for the min-height below to be resolvable. */
 :host {
     display:block;
     height:100%;
@@ -16,8 +13,6 @@ export const createTicketStyle = css`
     --gutter-block: clamp(1.5rem, 4vh, 3rem);
 }
 
-/* baseStyles resets padding and margin on main, and it is loaded after this
-   stylesheet, so the gutters live on the grid items instead of here. */
 main {
     box-sizing:border-box;
 
@@ -29,13 +24,9 @@ main {
 
     width: 100%;
 
-    /* min-height instead of height: on short screens the page grows and scrolls
-       instead of overflowing the row it lives in. */
     min-height: 100%;
 }
 
-/* Both columns stretch to the full track width so the cards inside can resolve
-   their own percentages, and center their content within it. */
 aside {
    grid-row: 2/3;
    grid-column: 1/2;
@@ -64,8 +55,6 @@ article {
 
 /* ---- NAVIGATION ---- */
 
-/* Left aligned like the original design, but with the page gutters so it is
-   neither glued to the edge nor floating in the middle. */
 .link{
     display:flex;
     align-items: center;
@@ -108,8 +97,6 @@ article {
 
     border-radius:.3rem;
 
-    /* fit-content keeps the card hugging its content on wide screens, while
-       max-width stops it from overflowing once the track gets narrower. */
     width: fit-content;
     max-width: 100%;
 
@@ -173,8 +160,6 @@ article {
     }
 }
 
-/* From here down the two columns stop fitting side by side, so the explanation
-   stacks on top of the form. DOM order already puts them in that order. */
 @media (width <= 767px) {
     main {
         grid-template-columns: 1fr;
@@ -185,14 +170,10 @@ article {
 
     aside,
     article {
-        /* Explicit placements have to be dropped: with a single column they
-           would push the cards into an implicit second column. */
         grid-row: auto;
         grid-column: 1;
     }
-
-    /* The rows are auto here, so the form card would end flush against the
-       bottom edge of the viewport. */
+    
     article {
         padding-block-end: var(--gutter-block);
     }
