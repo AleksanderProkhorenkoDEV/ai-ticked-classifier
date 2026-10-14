@@ -38,8 +38,6 @@ aside {
 
    padding-inline: var(--gutter-inline);
 
-   /* Grid items honour z-index without being positioned. Without it the
-      circles, which are absolute, would paint over the cards. */
    z-index: 1;
 
    display:flex;
@@ -171,8 +169,6 @@ article {
 
     border-radius: 100%;
 
-    /* Purely decorative: without this they would swallow clicks aimed at the
-       form controls underneath. */
     pointer-events: none;
 }
 
@@ -194,12 +190,12 @@ article {
 }
 
 .small-circle.one {
-    top: 4%;
+    bottom: 4%;
     right: var(--gutter-inline);
 }
 
 .small-circle.two {
-    bottom: 12%;
+    top: 12%;
     left: 6%;
 }
 
