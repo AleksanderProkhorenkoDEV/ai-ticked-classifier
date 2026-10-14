@@ -64,19 +64,20 @@ article {
 
 /* ---- NAVIGATION ---- */
 
-/* Spans both columns so it is centered on the page instead of sitting in the
-   corner of the left one. */
+/* Left aligned like the original design, but with the page gutters so it is
+   neither glued to the edge nor floating in the middle. */
 .link{
     display:flex;
     align-items: center;
     gap:0.2rem;
 
     grid-column: 1 / -1;
-    justify-self: center;
+    justify-self: start;
 
     width:fit-content;
 
     margin-block-start: var(--gutter-block);
+    margin-inline-start: var(--gutter-inline);
 
     font-weight:bold;
 }
