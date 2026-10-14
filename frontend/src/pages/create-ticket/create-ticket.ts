@@ -40,6 +40,10 @@ export class CreateTicketPage extends LitElement {
                 <article>
                     <create-ticket-form></create-ticket-form>
                 </article>
+
+                <div class="big-circle"></div>
+                <div class="small-circle one"></div>
+                <div class="small-circle two"></div>
             </main>
         `
     }

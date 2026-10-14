@@ -24,6 +24,9 @@ main {
 
     width: 100%;
 
+    position: relative;
+    overflow-x: clip;
+
     min-height: 100%;
 }
 
@@ -34,6 +37,10 @@ aside {
    width:100%;
 
    padding-inline: var(--gutter-inline);
+
+   /* Grid items honour z-index without being positioned. Without it the
+      circles, which are absolute, would paint over the cards. */
+   z-index: 1;
 
    display:flex;
    align-items:center;
@@ -47,6 +54,8 @@ article {
     width:100%;
 
     padding-inline: var(--gutter-inline);
+
+    z-index: 1;
 
     display:flex;
     align-items:center;
@@ -67,6 +76,8 @@ article {
 
     margin-block-start: var(--gutter-block);
     margin-inline-start: var(--gutter-inline);
+
+    z-index: 1;
 
     font-weight:bold;
 }
@@ -152,6 +163,46 @@ article {
       center / 70% no-repeat;
 }
 
+/* ---- DECORATORS ---- */
+
+.big-circle,
+.small-circle {
+    position: absolute;
+
+    border-radius: 100%;
+
+    /* Purely decorative: without this they would swallow clicks aimed at the
+       form controls underneath. */
+    pointer-events: none;
+}
+
+.big-circle {
+    top: 6%;
+    right: -8%;
+
+    width: clamp(12.5rem, 7.87rem + 24.691vw, 37.5rem);
+    aspect-ratio: 1;
+
+    background-color: rgb(from var(--color-primary) r g b / 0.1);
+}
+
+.small-circle {
+    width: clamp(1.25rem, 1.019rem + 1.235vw, 2.5rem);
+    aspect-ratio: 1;
+
+    background-color: rgb(from var(--color-primary) r g b / 0.5);
+}
+
+.small-circle.one {
+    top: 4%;
+    right: var(--gutter-inline);
+}
+
+.small-circle.two {
+    bottom: 12%;
+    left: 6%;
+}
+
 /* ---- MEDIA QUERYS ---- */
 
 @media (width <= 1024px) {
@@ -173,9 +224,26 @@ article {
         grid-row: auto;
         grid-column: 1;
     }
-    
+
     article {
         padding-block-end: var(--gutter-block);
+    }
+
+    /* Stacked, the top of the page is all card, so the circles move down to
+       where there is empty space to show them. */
+    .big-circle {
+        top: auto;
+        bottom: -12%;
+        right: -30%;
+    }
+
+    .small-circle.one {
+        display: none;
+    }
+
+    .small-circle.two {
+        bottom: 4%;
+        left: 8%;
     }
 }
 
