@@ -2,6 +2,13 @@ import { css } from "lit";
 
 export const createTicketFormStyles = css`
 
+/* The page centers this element, so it has to fill the column and leave the
+   card width to the form itself. */
+:host {
+    display:block;
+    width:100%;
+}
+
 .form{
     border-radius:.3rem;
 
@@ -9,10 +16,25 @@ export const createTicketFormStyles = css`
     flex-direction:column;
     gap:1rem;
 
-    padding: 1rem 2rem;
+    /* An explicit width instead of the intrinsic one: without it the card width
+       depends on how the browser resolves the default input/textarea sizes. */
+    width: min(100%, 34rem);
+    margin-inline: auto;
+
+    padding: 1rem clamp(1.25rem, 3vw, 2rem);
 
     background-color:var(--color-white);
     box-shadow: 6px 9px 20px rgba(13, 19, 33, 0.5);   
+}
+
+.form__title{
+    font-size: clamp(1.4rem, 1.1rem + 1.5vw, 2rem);
+}
+
+/* The <br/> that used to split this sentence also fixed the width of the card.
+   Without it the sentence has to find its own line breaks. */
+.form__subtitle{
+    text-wrap: balance;
 }
 
 .form__label{
@@ -61,6 +83,12 @@ export const createTicketFormStyles = css`
     border-color: var(--color-primary);
 }
 
+textarea.form__input {
+    min-height: clamp(7rem, 22vh, 10rem);
+
+    resize: vertical;
+}
+
 .form__button{
     display: inline-flex;
     align-items: center;
@@ -101,5 +129,23 @@ export const createTicketFormStyles = css`
 
 .form__error{
     color: var(--color-red);
+}
+
+/* ---- MEDIA QUERYS ---- */
+
+@media (width <= 480px) {
+    /* Below 16px iOS zooms the viewport in when a field is focused, and the
+       user has to pinch back out to keep filling the form in. */
+    .form__input,
+    .form__button {
+        font-size: 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .form__input,
+    .form__button {
+        transition: none;
+    }
 }
 `

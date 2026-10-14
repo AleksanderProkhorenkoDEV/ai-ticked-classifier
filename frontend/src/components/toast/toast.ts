@@ -48,6 +48,21 @@ export class ToastNotification extends LitElement {
             .toast--error {
                 background-color: var(--color-red);
             }
+
+            /* ---- MEDIA QUERYS ---- */
+
+            @media (width <= 480px) {
+                :host {
+                    left: 1rem;
+                    right: 1rem;
+                    bottom: 1rem;
+                }
+
+                .toast {
+                    width: 100%;
+                    box-sizing: border-box;
+                }
+            }
         `
     ]
 

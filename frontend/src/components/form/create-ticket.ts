@@ -92,8 +92,8 @@ export class CreateTicketForm extends LitElement {
     render() {
         return html`
             <form class="form" @submit=${this._handleSubtmit}>
-                <h1>Crear Incidencia</h1>
-                <p>Explica detalladamente el problema, para que el modelo de IA <br/> pueda analizar y clasificar su problema</p>
+                <h1 class="form__title">Crear Incidencia</h1>
+                <p class="form__subtitle">Explica detalladamente el problema, para que el modelo de IA pueda analizar y clasificar su problema</p>
                 <label class="form__label" required="required">
                     Titulo
                     <input 

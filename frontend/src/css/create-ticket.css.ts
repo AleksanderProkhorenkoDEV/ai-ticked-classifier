@@ -4,38 +4,62 @@ export const createTicketStyle = css`
 
 
 /* ---- CONTAINERS ---- */
+
+/* The host is the scroll container of the app shell. It was display:inline, which
+   left <main> resolving its percentages against the shell instead of the host.
+   height has to be explicit for the min-height below to be resolvable. */
+:host {
+    display:block;
+    height:100%;
+}
+
 main {
     box-sizing:border-box;
 
     display:grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 200px 1fr;
+    grid-template-rows: auto 1fr;
 
-    
+    gap:2rem 3rem;
+
     width: 100%;
-    height: 100%;
+
+    /* min-height instead of height: on short screens the page grows and scrolls
+       instead of overflowing the row it lives in. */
+    min-height: 100%;
+
+    padding-inline: clamp(1.25rem, 5vw, 5rem);
+    padding-block: clamp(1.5rem, 4vh, 3rem);
 }
 
+/* Both columns stretch to the full track width so the cards inside can resolve
+   their own percentages, and center their content within it. */
 aside {
    grid-row: 2/3;
    grid-column: 1/2;
 
-   margin:auto;
+   width:100%;
+
+   display:flex;
+   align-items:center;
+   justify-content:center;
 }
 
 article {
     grid-row: 2/3;
     grid-column: 2/3;
 
-    margin:auto;
+    width:100%;
 
     display:flex;
-    flex-direction:column;
-    gap: 2rem;
+    align-items:center;
+    justify-content:center;
 }
 
 /* ---- NAVIGATION ---- */
 
+/* The left gutter now comes from the padding of <main>, so the link no longer
+   needs a hardcoded offset. */
 .link{
     display:flex;
     align-items: center;
@@ -44,8 +68,6 @@ article {
     width:fit-content;
 
     font-weight:bold;
-
-    margin-left:5rem;
 }
 
 .icon {
@@ -74,10 +96,14 @@ article {
 
     border-radius:.3rem;
 
+    /* fit-content keeps the card hugging its content on wide screens, while
+       max-width stops it from overflowing once the track gets narrower. */
     width: fit-content;
-    height: fit-content;
+    max-width: 100%;
 
-    padding:2rem;
+    margin-inline: auto;
+
+    padding: clamp(1.25rem, 3vw, 2rem);
 
     display:flex;
     flex-direction:column;
@@ -125,5 +151,42 @@ article {
     background: var(--color-green)
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 10.5l3.2 3.2L15 7'/%3E%3C/svg%3E")
       center / 70% no-repeat;
+}
+
+/* ---- MEDIA QUERYS ---- */
+
+@media (width <= 1024px) {
+    main {
+        column-gap: 2rem;
+    }
+}
+
+/* From here down the two columns stop fitting side by side, so the explanation
+   stacks on top of the form. DOM order already puts them in that order. */
+@media (width <= 767px) {
+    main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+
+        row-gap: 1.5rem;
+    }
+
+    aside,
+    article {
+        /* Explicit placements have to be dropped: with a single column they
+           would push the cards into an implicit second column. */
+        grid-row: auto;
+        grid-column: 1;
+    }
+}
+
+@media (width <= 480px) {
+    .description__list {
+        margin-left: 0;
+    }
+
+    .description__item {
+        padding-inline: 0.75rem;
+    }
 }
 `
