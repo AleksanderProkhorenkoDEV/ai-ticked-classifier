@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "npm run build && vite preview"
+    "preview": "pnpm build && vite preview"
   },
   "dependencies": {
     "@open-cells/core": "^1.2.1",

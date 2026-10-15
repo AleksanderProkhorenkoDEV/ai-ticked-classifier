@@ -9,7 +9,7 @@ they are classified into category, sentiment and priority
   - `backend/ticked-classifier`: Spring Boot 4.1.1, Java 21, Spring AI 2.0.1 (BOM) with the starter Mistral AI,
   - `frontend`: Lit + Vite + Typescript, routing with Open Cells. Node >= 22, manage with pnpm.
   - `infraestructure` (docker-compose: MySQL only — no backend/frontend containers).
-- API base path is `/tickeds` (`TicketController`), app runs on port 8080.
+- API base path is `/tickets` (`TicketController`), app runs on port 8080.
 - AI Model: ministral-3b-2512, JSON-schema response parsed into TicketClasification
 - DB Schema: JPA generate it. No migrations
 
@@ -31,7 +31,7 @@ Frontend (run from frontend):
 
 - `pnpm dev` (Vite, port 5173) · `pnpm build` · `pnpm preview`.
 - `pnpm build` runs tsc && vite build and is the only typecheck. There is no lint, formatter, test runner or CI config in the repo.
-- frontend/README.md says npm install: that is stale, use pnpm (lockfile is pnpm-lock.yaml).
+- The frontend uses pnpm, not npm (the lockfile is pnpm-lock.yaml). Never introduce npm commands.
 
 ## Environment
 
@@ -63,7 +63,7 @@ Frontend (run from frontend):
 - Ask first:
   - Adding dependencies (Maven or pnpm).
   - Creating new files or changing the folder structure.
-  - Changing JPA entities (alters the real schema) or the API data format (/tickeds, DTOs).
+  - Changing JPA entities (alters the real schema) or the API data format (/tickets, DTOs).
   - Touching the POM, docker-compose or the Makefile.
 
 - Never:

@@ -5,14 +5,14 @@ An application built with [Open Cells](https://github.com/open-cells-project/ope
 ## Getting started
 
 ```sh
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 ## Scripts
 
 | Script | Description |
 |---|---|
-| `npm run dev` | Start the development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview the production build |
+| `pnpm dev` | Start the development server |
+| `pnpm build` | Build for production (runs `tsc` first, so it also typechecks) |
+| `pnpm preview` | Preview the production build |
