@@ -30,6 +30,9 @@ import dev.aprokhorenko.ticked_classifier.entities.Ticket;
 import dev.aprokhorenko.ticked_classifier.entities.TicketCategory;
 import dev.aprokhorenko.ticked_classifier.entities.TicketFeeling;
 import dev.aprokhorenko.ticked_classifier.entities.TicketUrgency;
+import dev.aprokhorenko.ticked_classifier.exceptions.InappropriateContentException;
+import dev.aprokhorenko.ticked_classifier.exceptions.ModelCallFailedException;
+import dev.aprokhorenko.ticked_classifier.exceptions.ModerationUnavailableException;
 import dev.aprokhorenko.ticked_classifier.mappers.TicketMapper;
 import dev.aprokhorenko.ticked_classifier.services.TicketServices;
 import jakarta.persistence.EntityNotFoundException;
@@ -41,7 +44,11 @@ import jakarta.persistence.EntityNotFoundException;
 // entity to DTO mapping is exercised instead of a mock that would return nulls.
 @Import(TicketMapper.class)
 // Webconfig is a WebMvcConfigurer, so the slice DOES load it, and it fails to start without this.
-@TestPropertySource(properties = "app.cors.allowed-origins=http://localhost:5173")
+// The rate limit is raised too: every request here comes from the same remote address, and the
+// filter is covered on its own by CreateTicketRateLimitFilterTest.
+@TestPropertySource(properties = {
+        "app.cors.allowed-origins=http://localhost:5173",
+        "app.rate-limit.create-ticket.max-requests=1000" })
 class TicketControllerTest {
 
     private static final LocalDateTime FIXED_DATE = LocalDateTime.of(2026, 1, 15, 10, 30);
@@ -156,7 +163,7 @@ class TicketControllerTest {
                 .hasStatus(HttpStatus.BAD_REQUEST)
                 .bodyJson()
                 .extractingPath("$.message")
-                .isEqualTo("title: Este campo no puede estar vacío");
+                .isEqualTo("title: Este campo no puede estar vacío ni ser solo espacios");
 
         verifyNoInteractions(tickedServices);
     }
@@ -172,15 +179,65 @@ class TicketControllerTest {
                 .hasStatus(HttpStatus.BAD_REQUEST)
                 .bodyJson()
                 .extractingPath("$.message")
-                .isEqualTo("description: Este campo no puede estar vacío");
+                .isEqualTo("description: Este campo no puede estar vacío ni ser solo espacios");
+
+        verifyNoInteractions(tickedServices);
+    }
+
+    // @NotBlank instead of @NotEmpty: a field full of spaces is not a description either.
+    @Test
+    @DisplayName("POST /tickets/create con solo espacios devuelve 400")
+    void createRejectsAWhitespaceOnlyDescription() {
+        assertThat(mvc.post().uri("/tickets/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"title":"Error","description":"     "}
+                        """))
+                .hasStatus(HttpStatus.BAD_REQUEST);
+
+        verifyNoInteractions(tickedServices);
+    }
+
+    // The limit matches the varchar(255) column, so an oversized ticket is refused with a
+    // readable message instead of blowing up later as a SQL "data too long".
+    @Test
+    @DisplayName("POST /tickets/create con una descripcion demasiado larga devuelve 400")
+    void createRejectsAnOversizedDescription() {
+        assertThat(mvc.post().uri("/tickets/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"title":"Error","description":"%s"}
+                        """.formatted("a".repeat(256))))
+                .hasStatus(HttpStatus.BAD_REQUEST)
+                .bodyJson()
+                .extractingPath("$.message")
+                .isEqualTo("description: La descripción no puede superar los 255 caracteres");
 
         verifyNoInteractions(tickedServices);
     }
 
     @Test
-    @DisplayName("POST /tickets/create deja escapar el fallo del clasificador")
-    void createPropagatesTheClassifierFailure() {
-        doThrow(new RuntimeException("No se pudo obtener respuesta del LLM"))
+    @DisplayName("POST /tickets/create con contenido inapropiado devuelve 400 con el motivo")
+    void createRejectsInappropriateContent() {
+        doThrow(new InappropriateContentException()).when(tickedServices).createTicked(any());
+
+        assertThat(mvc.post().uri("/tickets/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"title":"Error al subir imagenes","description":"Sale un error 500"}
+                        """))
+                .hasStatus(HttpStatus.BAD_REQUEST)
+                .bodyJson()
+                .isEqualTo("""
+                        {"message":"El contenido del ticket no es apropiado","status":400}
+                        """);
+    }
+
+    // Failing closed: a moderation outage must not turn into a silent pass.
+    @Test
+    @DisplayName("POST /tickets/create devuelve 503 si la moderacion no esta disponible")
+    void createReturnsServiceUnavailableWhenTheModerationIsDown() {
+        doThrow(new ModerationUnavailableException(new RuntimeException("connection reset")))
                 .when(tickedServices).createTicked(any());
 
         assertThat(mvc.post().uri("/tickets/create")
@@ -188,9 +245,31 @@ class TicketControllerTest {
                 .content("""
                         {"title":"Error al subir imagenes","description":"Sale un error 500"}
                         """))
-                .hasFailed()
-                .failure()
-                .hasRootCauseMessage("No se pudo obtener respuesta del LLM");
+                .hasStatus(HttpStatus.SERVICE_UNAVAILABLE)
+                .bodyJson()
+                .isEqualTo("""
+                        {"message":"No se pudo verificar el contenido del ticket, inténtalo más tarde","status":503}
+                        """);
+    }
+
+    // Before this handler the failure escaped as the default Boot error body, so the frontend had
+    // to understand two different response shapes.
+    @Test
+    @DisplayName("POST /tickets/create devuelve 502 cuando falla el clasificador")
+    void createReturnsBadGatewayWhenTheClassifierFails() {
+        doThrow(new ModelCallFailedException("No se pudo obtener respuesta del LLM", new RuntimeException()))
+                .when(tickedServices).createTicked(any());
+
+        assertThat(mvc.post().uri("/tickets/create")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"title":"Error al subir imagenes","description":"Sale un error 500"}
+                        """))
+                .hasStatus(HttpStatus.BAD_GATEWAY)
+                .bodyJson()
+                .isEqualTo("""
+                        {"message":"No se pudo completar la clasificación, inténtalo de nuevo","status":502}
+                        """);
     }
 
     /* ---- PATCH /tickets/update-status/{id} ---- */

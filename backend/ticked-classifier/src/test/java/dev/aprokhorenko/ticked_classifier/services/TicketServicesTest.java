@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +32,7 @@ import dev.aprokhorenko.ticked_classifier.entities.TicketCategory;
 import dev.aprokhorenko.ticked_classifier.entities.TicketFeeling;
 import dev.aprokhorenko.ticked_classifier.entities.TicketStatus;
 import dev.aprokhorenko.ticked_classifier.entities.TicketUrgency;
+import dev.aprokhorenko.ticked_classifier.exceptions.InappropriateContentException;
 import dev.aprokhorenko.ticked_classifier.repositories.TicketRepository;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -44,16 +46,23 @@ class TicketServicesTest {
             TicketCategory.BUG, TicketFeeling.NEGATIVO, TicketUrgency.ALTA);
 
     @Mock
-    private TicketRepository tickedRepository;
+    private TicketRepository ticketRepository;
 
     @Mock
     private TicketClasificationServices ticketClasificationServices;
+
+    @Mock
+    private TicketModerationServices ticketModerationServices;
+
+    @Mock
+    private TicketPersistenceServices ticketPersistenceServices;
 
     private TicketServices service;
 
     @BeforeEach
     void setUp() {
-        service = new TicketServices(tickedRepository, ticketClasificationServices);
+        service = new TicketServices(ticketRepository, ticketClasificationServices,
+                ticketModerationServices, ticketPersistenceServices);
     }
 
     private CreateTicketRequestDTO createRequest() {
@@ -83,7 +92,7 @@ class TicketServicesTest {
         service.createTicked(createRequest());
 
         ArgumentCaptor<Ticket> captor = ArgumentCaptor.forClass(Ticket.class);
-        verify(tickedRepository).save(captor.capture());
+        verify(ticketPersistenceServices).saveNew(captor.capture());
 
         Ticket saved = captor.getValue();
         assertThat(saved.getTitle()).isEqualTo(TITLE);
@@ -101,7 +110,7 @@ class TicketServicesTest {
         service.createTicked(createRequest());
 
         ArgumentCaptor<Ticket> captor = ArgumentCaptor.forClass(Ticket.class);
-        verify(tickedRepository).save(captor.capture());
+        verify(ticketPersistenceServices).saveNew(captor.capture());
 
         assertThat(captor.getValue().getStatus()).isEqualTo(TicketStatus.ABIERTO);
         assertThat(captor.getValue().getArchived()).isFalse();
@@ -118,6 +127,30 @@ class TicketServicesTest {
     }
 
     @Test
+    @DisplayName("createTicked manda el titulo y la descripcion al moderador")
+    void createTickedModeratesWithTheRequestData() {
+        when(ticketClasificationServices.classifyTicket(TITLE, DESCRIPTION)).thenReturn(CLASSIFICATION);
+
+        service.createTicked(createRequest());
+
+        verify(ticketModerationServices).moderate(TITLE, DESCRIPTION);
+    }
+
+    // La moderacion es la puerta de entrada de un contenido que puede leer cualquiera, asi que
+    // cuando rechaza el ticket nada debe llegar al clasificador ni a la base de datos.
+    @Test
+    @DisplayName("Si la moderacion rechaza el ticket no se clasifica ni se guarda")
+    void doesNotClassifyNorSaveWhenTheModerationRefuses() {
+        doThrow(new InappropriateContentException()).when(ticketModerationServices).moderate(TITLE, DESCRIPTION);
+
+        assertThatThrownBy(() -> service.createTicked(createRequest()))
+                .isInstanceOf(InappropriateContentException.class);
+
+        verify(ticketClasificationServices, never()).classifyTicket(any(), any());
+        verify(ticketPersistenceServices, never()).saveNew(any());
+    }
+
+    @Test
     @DisplayName("Si el LLM falla no se guarda nada")
     void doesNotSaveWhenTheClassifierFails() {
         RuntimeException llmError = new RuntimeException("No se pudo obtener respuesta del LLM");
@@ -127,7 +160,31 @@ class TicketServicesTest {
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("No se pudo obtener respuesta del LLM");
 
-        verify(tickedRepository, never()).save(any());
+        verify(ticketPersistenceServices, never()).saveNew(any());
+    }
+
+    @Test
+    @DisplayName("createTicked normaliza el texto antes de moderar, clasificar y guardar")
+    void createTickedNormalizesTheText() {
+        CreateTicketRequestDTO request = createRequest();
+        request.setTitle("  Error\u200B al subir\u00A0imagenes  ");
+        request.setDescription("Al subir una imagen\n\nsale un error 500 ");
+
+        when(ticketClasificationServices.classifyTicket(any(), any())).thenReturn(CLASSIFICATION);
+
+        service.createTicked(request);
+
+        ArgumentCaptor<Ticket> captor = ArgumentCaptor.forClass(Ticket.class);
+        verify(ticketPersistenceServices).saveNew(captor.capture());
+
+        // The zero width space, the non breaking space, the line breaks and the padding are gone.
+        assertThat(captor.getValue().getTitle()).isEqualTo("Error al subir imagenes");
+        assertThat(captor.getValue().getDescription()).isEqualTo("Al subir una imagen sale un error 500");
+
+        verify(ticketModerationServices)
+                .moderate("Error al subir imagenes", "Al subir una imagen sale un error 500");
+        verify(ticketClasificationServices)
+                .classifyTicket("Error al subir imagenes", "Al subir una imagen sale un error 500");
     }
 
     /* ---- getAllTickeds ---- */
@@ -138,38 +195,38 @@ class TicketServicesTest {
     @Test
     @DisplayName("Un search vacio se normaliza a null antes de llegar al repositorio")
     void blankSearchBecomesNull() {
-        when(tickedRepository.findFiltered(any(), any(), any(), any(Pageable.class)))
+        when(ticketRepository.findFiltered(any(), any(), any(), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of()));
 
         service.getAllTickeds(0, 10, TicketUrgency.ALTA, null, "   ");
         service.getAllTickeds(0, 10, TicketUrgency.ALTA, null, "");
         service.getAllTickeds(0, 10, TicketUrgency.ALTA, null, null);
 
-        verify(tickedRepository, org.mockito.Mockito.times(3))
+        verify(ticketRepository, org.mockito.Mockito.times(3))
                 .findFiltered(eq(TicketUrgency.ALTA), eq(null), eq(null), any(Pageable.class));
     }
 
     @Test
     @DisplayName("Un search con texto se pasa recortado al repositorio")
     void searchIsTrimmed() {
-        when(tickedRepository.findFiltered(any(), any(), any(), any(Pageable.class)))
+        when(ticketRepository.findFiltered(any(), any(), any(), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of()));
 
         service.getAllTickeds(0, 10, null, TicketCategory.BUG, "  error  ");
 
-        verify(tickedRepository).findFiltered(eq(null), eq(TicketCategory.BUG), eq("error"), any(Pageable.class));
+        verify(ticketRepository).findFiltered(eq(null), eq(TicketCategory.BUG), eq("error"), any(Pageable.class));
     }
 
     @Test
     @DisplayName("getAllTickeds delega la paginacion al repositorio")
     void delegatesThePagination() {
         Pageable pageable = PageRequest.of(2, 25);
-        when(tickedRepository.findFiltered(any(), any(), any(), eq(pageable)))
+        when(ticketRepository.findFiltered(any(), any(), any(), eq(pageable)))
                 .thenReturn(new PageImpl<>(List.of()));
 
         service.getAllTickeds(2, 25, null, null, null);
 
-        verify(tickedRepository).findFiltered(eq(null), eq(null), eq(null), eq(pageable));
+        verify(ticketRepository).findFiltered(eq(null), eq(null), eq(null), eq(pageable));
     }
 
     /* ---- getTickedById ---- */
@@ -178,7 +235,7 @@ class TicketServicesTest {
     @DisplayName("getTickedById devuelve el ticket cuando existe")
     void returnsTheTicketWhenItExists() {
         Ticket ticket = existingTicket();
-        when(tickedRepository.findById(1L)).thenReturn(Optional.of(ticket));
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
 
         assertThat(service.getTickedById(1L)).isSameAs(ticket);
     }
@@ -186,7 +243,7 @@ class TicketServicesTest {
     @Test
     @DisplayName("getTickedById lanza EntityNotFoundException si no existe")
     void throwsWhenTheTicketDoesNotExist() {
-        when(tickedRepository.findById(99L)).thenReturn(Optional.empty());
+        when(ticketRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.getTickedById(99L))
                 .isInstanceOf(EntityNotFoundException.class);
@@ -199,7 +256,7 @@ class TicketServicesTest {
     void updateStatusUnarchives() {
         Ticket ticket = existingTicket();
         ticket.changeArchived(true);
-        when(tickedRepository.findById(1L)).thenReturn(Optional.of(ticket));
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
 
         service.updateStatus(statusRequest(TicketStatus.CERRADO), 1L);
 
@@ -211,7 +268,7 @@ class TicketServicesTest {
     @DisplayName("updateStatus marca como archivado cuando el estado es ARCHIVADO")
     void updateStatusArchives() {
         Ticket ticket = existingTicket();
-        when(tickedRepository.findById(1L)).thenReturn(Optional.of(ticket));
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
 
         service.updateStatus(statusRequest(TicketStatus.ARCHIVADO), 1L);
 
@@ -222,7 +279,7 @@ class TicketServicesTest {
     @Test
     @DisplayName("updateStatus con un id inexistente lanza EntityNotFoundException")
     void updateStatusThrowsWhenTheTicketDoesNotExist() {
-        when(tickedRepository.findById(99L)).thenReturn(Optional.empty());
+        when(ticketRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.updateStatus(statusRequest(TicketStatus.CERRADO), 99L))
                 .isInstanceOf(EntityNotFoundException.class);
@@ -233,10 +290,10 @@ class TicketServicesTest {
     @Test
     @DisplayName("getTicketStats cuenta cada estado con su consulta")
     void buildsTheStatsFromTheRepository() {
-        when(tickedRepository.count()).thenReturn(12L);
-        when(tickedRepository.countByStatus(TicketStatus.ABIERTO)).thenReturn(7L);
-        when(tickedRepository.countByUrgency(TicketUrgency.ALTA)).thenReturn(3L);
-        when(tickedRepository.countByArchivedTrue()).thenReturn(2L);
+        when(ticketRepository.count()).thenReturn(12L);
+        when(ticketRepository.countByStatus(TicketStatus.ABIERTO)).thenReturn(7L);
+        when(ticketRepository.countByUrgency(TicketUrgency.ALTA)).thenReturn(3L);
+        when(ticketRepository.countByArchivedTrue()).thenReturn(2L);
 
         TicketStatsDTO stats = service.getTicketStats();
 
