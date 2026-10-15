@@ -14,6 +14,11 @@ interface FormErrors {
     description: { message: String };
 }
 
+// Mismos límites que impone el backend (@Size), para no dejar que el usuario descubra el
+// rechazo con un 400 después de esperar la clasificación.
+const TITLE_MAX_LENGTH = 120;
+const DESCRIPTION_MAX_LENGTH = 255;
+
 
 @customElement("create-ticket-form")
 export class CreateTicketForm extends LitElement {
@@ -37,10 +42,14 @@ export class CreateTicketForm extends LitElement {
 
         if (values.title.trim().length < 3) {
             result.title.message = "El título debe tener al menos 3 caracteres";
+        } else if (values.title.trim().length > TITLE_MAX_LENGTH) {
+            result.title.message = `El título no puede superar los ${TITLE_MAX_LENGTH} caracteres`;
         }
 
         if (values.description.trim().length < 10) {
             result.description.message = "Describe el problema con un poco más de detalle";
+        } else if (values.description.trim().length > DESCRIPTION_MAX_LENGTH) {
+            result.description.message = `La descripción no puede superar los ${DESCRIPTION_MAX_LENGTH} caracteres`;
         }
 
         const isValid = Object.values(result).every(field => field.message === "");
@@ -68,8 +77,14 @@ export class CreateTicketForm extends LitElement {
             this._values = { title: '', description: '' };
             this._errors = undefined;
         } catch (error) {
+            // El backend explica el rechazo (contenido inapropiado, moderación caída, límite de
+            // peticiones), así que se enseña su mensaje en lugar de uno genérico.
+            const message = error instanceof Error
+                ? error.message
+                : 'No se pudo crear el ticket, inténtalo de nuevo';
+
             this.dispatchEvent(new CustomEvent('ticket-created', {
-                detail: { message: 'No se pudo crear el ticket, inténtalo de nuevo', type: 'error' },
+                detail: { message, type: 'error' },
                 bubbles: true,
                 composed: true,
             }));
@@ -101,6 +116,7 @@ export class CreateTicketForm extends LitElement {
                         class="form__input" 
                         type="text" 
                         required
+                        maxlength=${TITLE_MAX_LENGTH}
                         .value=${this._values.title}
                         @input=${this._handleChangeInput}
                     />
@@ -115,8 +131,8 @@ export class CreateTicketForm extends LitElement {
                     <textarea  
                         name="description"
                         class="form__input" 
-                        type="text" 
                         required
+                        maxlength=${DESCRIPTION_MAX_LENGTH}
                         .value=${this._values.description}
                         @input=${this._handleChangeInput}
                     >
@@ -133,7 +149,7 @@ export class CreateTicketForm extends LitElement {
                     ?disabled=${this._isSubmitting}
                 >
                     ${this._isSubmitting
-                ? 'Clasificando...'
+                ? 'Verificando y clasificando...'
                 : html`<img src="/icons/add.svg" alt="" /> Crear ticket`}
                 </button>
             </form>
