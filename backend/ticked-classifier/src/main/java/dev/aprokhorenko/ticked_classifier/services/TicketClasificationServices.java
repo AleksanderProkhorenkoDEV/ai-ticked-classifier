@@ -11,6 +11,7 @@ import org.springframework.ai.mistralai.api.MistralAiApi.ChatCompletionRequest.R
 import org.springframework.stereotype.Service;
 
 import dev.aprokhorenko.ticked_classifier.dto.TicketClasification;
+import dev.aprokhorenko.ticked_classifier.exceptions.ModelCallFailedException;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -45,14 +46,14 @@ public class TicketClasificationServices {
             rawOutput = response.getResult().getOutput().getText();
         } catch (Exception e) {
             log.severe("Error en la llamada al LLM");
-            throw new RuntimeException("No se pudo obtener respuesta del LLM", e);
+            throw new ModelCallFailedException("No se pudo obtener respuesta del LLM", e);
         }
 
         try {
             return this.mapper.readValue(rawOutput, TicketClasification.class);
         } catch (JacksonException e) {
             log.severe("Error al convertir el JSON");
-            throw new RuntimeException("El modelo tiene un formato inesperado", e);
+            throw new ModelCallFailedException("El modelo tiene un formato inesperado", e);
         }
     }
 }
