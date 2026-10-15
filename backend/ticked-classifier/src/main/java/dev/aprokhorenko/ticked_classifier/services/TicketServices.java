@@ -1,5 +1,7 @@
 package dev.aprokhorenko.ticked_classifier.services;
 
+import java.util.regex.Pattern;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -19,34 +21,47 @@ import jakarta.transaction.Transactional;
 @Service
 public class TicketServices {
 
-    private TicketRepository tickedRepository;
-    private TicketClasificationServices ticketClasificationServices;
+    private static final Pattern INVISIBLE_CHARS = Pattern.compile("[\\p{Cc}\\p{Cf}\\p{Z}]");
+    private static final Pattern REPEATED_SPACES = Pattern.compile(" +");
 
-    public TicketServices(TicketRepository tickedRepository, TicketClasificationServices ticketClasificationServices) {
-        this.tickedRepository = tickedRepository;
+    private TicketRepository ticketRepository;
+    private TicketClasificationServices ticketClasificationServices;
+    private TicketModerationServices ticketModerationServices;
+    private TicketPersistenceServices ticketPersistenceServices;
+
+    public TicketServices(TicketRepository ticketRepository,
+            TicketClasificationServices ticketClasificationServices,
+            TicketModerationServices ticketModerationServices,
+            TicketPersistenceServices ticketPersistenceServices) {
+        this.ticketRepository = ticketRepository;
         this.ticketClasificationServices = ticketClasificationServices;
+        this.ticketModerationServices = ticketModerationServices;
+        this.ticketPersistenceServices = ticketPersistenceServices;
     }
 
     public Page<Ticket> getAllTickeds(int page, int size,
         TicketUrgency urgency, TicketCategory category, String search) {
         String term = (search == null || search.isBlank()) ? null : search.trim();
-        return tickedRepository.findFiltered(urgency, category, term, PageRequest.of(page, size));
+        return ticketRepository.findFiltered(urgency, category, term, PageRequest.of(page, size));
     }
 
     public Ticket getTickedById(Long id) {
-        Ticket ticked = tickedRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        return ticked;
+        Ticket ticket = ticketRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return ticket;
     }
 
-    @Transactional
     public void createTicked(CreateTicketRequestDTO request) {
-        TicketClasification classification = ticketClasificationServices.classifyTicket(request.getTitle(),
-                request.getDescription());
+        String title = normalize(request.getTitle());
+        String description = normalize(request.getDescription());
 
-        Ticket ticket = new Ticket(request.getTitle(), request.getDescription(), classification.category(),
+        ticketModerationServices.moderate(title, description);
+
+        TicketClasification classification = ticketClasificationServices.classifyTicket(title, description);
+
+        Ticket ticket = new Ticket(title, description, classification.category(),
                 classification.urgency(), classification.feeling());
 
-        tickedRepository.save(ticket);
+        ticketPersistenceServices.saveNew(ticket);
     }
 
     @Transactional
@@ -59,9 +74,20 @@ public class TicketServices {
 
     public TicketStatsDTO getTicketStats() {
         return new TicketStatsDTO(
-                tickedRepository.count(),
-                tickedRepository.countByStatus(TicketStatus.ABIERTO),
-                tickedRepository.countByUrgency(TicketUrgency.ALTA),
-                tickedRepository.countByArchivedTrue());
+                ticketRepository.count(),
+                ticketRepository.countByStatus(TicketStatus.ABIERTO),
+                ticketRepository.countByUrgency(TicketUrgency.ALTA),
+                ticketRepository.countByArchivedTrue());
+    }
+
+    /**
+     * Trims, turns every invisible or exotic space into a plain one and collapses whitespace runs.
+     * Besides keeping the stored text tidy it removes the invisible characters used to smuggle
+     * instructions into the prompt. Validation already rejected blank input, so the result is
+     * never empty.
+     */
+    private static String normalize(String value) {
+        String withoutInvisibleChars = INVISIBLE_CHARS.matcher(value).replaceAll(" ");
+        return REPEATED_SPACES.matcher(withoutInvisibleChars.trim()).replaceAll(" ");
     }
 }
