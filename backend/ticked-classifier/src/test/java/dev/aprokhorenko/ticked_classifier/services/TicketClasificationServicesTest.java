@@ -33,8 +33,6 @@ class TicketClasificationServicesTest {
     private static final String TITLE = "Error al subir imagenes";
     private static final String DESCRIPTION = "Al subir una imagen sale un error 500 en la pantalla de perfil.";
 
-    // ChatModel is an interface, so Mockito builds a fake implementation of it in memory.
-    // No network, no API key, no bill, and always the same answer.
     @Mock
     private ChatModel chatModel;
 
@@ -42,7 +40,6 @@ class TicketClasificationServicesTest {
 
     @BeforeEach
     void setUp() {
-        // Built by hand on purpose: no Spring context, so the test runs in milliseconds.
         service = new TicketClasificationServices(chatModel);
     }
 
@@ -109,8 +106,6 @@ class TicketClasificationServicesTest {
     void wrapsTheMalformedJson() {
         mockLlmAnswer("esto no es un json");
 
-        // Fails if the catch ever goes back to org.springframework.boot.json.JsonParseException:
-        // that class extends IllegalArgumentException and the handler stops firing entirely.
         assertThatThrownBy(() -> service.classifyTicket(TITLE, DESCRIPTION))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("El modelo tiene un formato inesperado")
