@@ -53,8 +53,6 @@ class TicketControllerTest {
 
     private static final LocalDateTime FIXED_DATE = LocalDateTime.of(2026, 1, 15, 10, 30);
 
-    // @MockBean was removed in Spring Boot 4, @MockitoBean is the replacement.
-    // The service is mocked, so these tests never reach the database or the model.
     @MockitoBean
     private TicketServices tickedServices;
 
