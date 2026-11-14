@@ -26,6 +26,7 @@ export class AppIndex extends LitElement {
 
   render() {
     return html`
+      <backend-wake-notice></backend-wake-notice>
       <main role="main" tabindex="-1"
         @ticket-created=${this._showToast}
         @ticket-archived=${this._showToast}>
